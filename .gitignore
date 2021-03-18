@@ -1,4 +1,5 @@
 .env
 db/
 backend/node_modules
+backend/config/default.json
 frontend/node_modules
