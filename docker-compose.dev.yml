@@ -10,6 +10,7 @@ services:
     volumes:
       - ./frontend:/frontend
     tty: true
+    command: 'yarn dev'
 
   backend:
     build:
@@ -20,6 +21,7 @@ services:
     volumes:
       - ./backend:/backend
     tty: true
+    command: 'yarn dev'
     depends_on:
       - mongo
 
