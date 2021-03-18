@@ -10,6 +10,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+// Define Routes
+const router = require('./routes')
+app.use('/api/v1', router)
+
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`)
 })
