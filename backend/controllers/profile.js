@@ -104,4 +104,15 @@ module.exports = {
       res.status(500).send('Server Error')
     }
   },
+  deleteProfile: async (req, res) => {
+    try {
+      // @todo - ユーザーの投稿も削除する
+      await Profile.findOneAndRemove({ user: req.user.id })
+      await User.findOneAndRemove({ _id: req.user.id })
+      res.json({ msg: 'ユーザーは削除されました' })
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  },
 }
