@@ -17,7 +17,17 @@ router.post(
   ],
   postsController.createPost
 )
+router.post(
+  '/comment/:post_id',
+  [auth, [check('text', '本文が必要です').not().isEmpty()]],
+  postsController.createComment
+)
 router.put('/like/:post_id', auth, postsController.likePost)
 router.delete('/:post_id', auth, postsController.deletePost)
+router.delete(
+  '/comment/:post_id/:comment_id',
+  auth,
+  postsController.deleteComment
+)
 
 module.exports = router
