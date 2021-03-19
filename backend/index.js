@@ -6,11 +6,14 @@ const connectDB = require('./config/db')
 // Connect DB
 connectDB()
 
+// Middleware初期化
+app.use(express.json({ extended: false }))
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-// Define Routes
+// Routeの定義
 const router = require('./routes')
 app.use('/api/v1', router)
 
