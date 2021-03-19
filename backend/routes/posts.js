@@ -4,7 +4,8 @@ const postsController = require('../controllers/posts')
 const auth = require('../middleware/auth')
 const { check } = require('express-validator')
 
-router.get('/', postsController.sendRouterName)
+router.get('/', auth, postsController.getAllPosts)
+router.get('/:post_id', auth, postsController.getPostById)
 router.post(
   '/',
   [
@@ -16,5 +17,6 @@ router.post(
   ],
   postsController.createPost
 )
+router.delete('/:post_id', auth, postsController.deletePost)
 
 module.exports = router
