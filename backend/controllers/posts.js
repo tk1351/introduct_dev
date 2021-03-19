@@ -54,6 +54,29 @@ module.exports = {
       res.status(500).send('Server Error')
     }
   },
+  likePost: async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.post_id)
+      if (!post) {
+        return res.status(404).json({ msg: '投稿がありません' })
+      }
+
+      // 投稿が既にlikeされているか確認する
+      if (
+        post.likes.filter((like) => like.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        return res.status(400).json({ msg: '投稿は既にlikeされてます' })
+      }
+
+      post.likes.unshift({ user: req.user.id })
+      await post.save()
+      res.json(post.likes)
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  },
   deletePost: async (req, res) => {
     try {
       const post = await Post.findById(req.params.post_id)
