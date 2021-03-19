@@ -1,7 +1,13 @@
 import React, { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setAlert, removeAlert } from '../../features/alertSlice'
+import { v4 as uuidv4 } from 'uuid'
+import Alert from '../layout/Alert'
 
 const Register = () => {
+  const dispatch = useDispatch()
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,7 +24,15 @@ const Register = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (password !== password2) {
-      console.log('確認用パスワードが異なります')
+      const id = uuidv4()
+      dispatch(
+        setAlert({
+          id,
+          msg: '確認用パスワードが異なります',
+          alertType: 'danger',
+        })
+      )
+      setTimeout(() => dispatch(removeAlert({ id })), 5000)
     } else {
       console.log(formData)
     }
@@ -26,6 +40,7 @@ const Register = () => {
 
   return (
     <Fragment>
+      <Alert />
       <h1 className="large text-primary">ユーザー登録</h1>
       <p className="lead">
         <i className="fas fa-user"></i> アカウントを作成する
