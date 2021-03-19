@@ -76,7 +76,7 @@ const Register = () => {
             required
           />
         </div>
-        <input type="submit" className="btn btn-primary" value="Register" />
+        <input type="submit" className="btn btn-primary" value="登録" />
       </form>
       <p className="my-1">
         既にアカウントを持っていますか？ <Link to="/login">ログイン</Link>
