@@ -3,8 +3,35 @@ const User = require('../models/User')
 const { validationResult } = require('express-validator')
 
 module.exports = {
-  sendRouterName: (req, res) => {
-    res.send('Profile route')
+  getAllProfiles: async (req, res) => {
+    try {
+      // Profileのrefからnameとavatarを追加する
+      const profiles = await Profile.find().populate('user', ['name', 'avatar'])
+      res.json(profiles)
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  },
+  getProfileByUserId: async (req, res) => {
+    try {
+      const profile = await Profile.findOne({
+        user: req.params.user_id,
+      }).populate('user', ['name', 'avatar'])
+
+      if (!profile) {
+        return res
+          .status(400)
+          .json({ msg: 'このユーザーのプロフィールは存在しません' })
+      }
+      res.json(profile)
+    } catch (err) {
+      console.error(err.message)
+      if (err.kind === 'ObjectId') {
+        return res.status(400).json({ msg: 'プロフィールは存在しません' })
+      }
+      res.status(500).send('Server Error')
+    }
   },
   getCurrentUserProfile: async (req, res) => {
     try {

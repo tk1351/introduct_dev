@@ -4,7 +4,8 @@ const profileController = require('../controllers/profile')
 const auth = require('../middleware/auth')
 const { check } = require('express-validator')
 
-router.get('/', profileController.sendRouterName)
+router.get('/', profileController.getAllProfiles)
+router.get('/user/:user_id', profileController.getProfileByUserId)
 router.get('/me', auth, profileController.getCurrentUserProfile)
 router.post(
   '/',
