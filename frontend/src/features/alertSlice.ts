@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from '../app/store'
 
 const initialState = {
   alert: [
@@ -15,13 +14,11 @@ export const alertSlice = createSlice({
   name: 'alert',
   initialState,
   reducers: {
-    setAlert(state, action) {
-      state.alert = [...state.alert, action.payload]
+    setAlert(state, { payload }) {
+      state.alert = [...state.alert, payload]
     },
-    removeAlert(state, action) {
-      state.alert = state.alert.filter(
-        (alert) => alert.id !== action.payload.id
-      )
+    removeAlert(state, { payload }) {
+      state.alert = state.alert.filter((alert) => alert.id !== payload.id)
     },
   },
 })

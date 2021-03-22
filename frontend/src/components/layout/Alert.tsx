@@ -2,15 +2,18 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 const Alert = () => {
-  const alert = useSelector((state: any) => state.alert.alert).slice(-1)[0]
-  const isAlert =
-    alert.alertType === 'danger' ? (
-      <>
-        <div className={`alert alert-${alert.alertType}`}>{alert.msg}</div>
-      </>
-    ) : (
-      <></>
-    )
+  const alerts = useSelector((state: any) => state.alert.alert)
+  const isAlert = alerts.map(
+    (alert: { id: string; msg: string; alertType: string }) =>
+      alert.alertType === 'danger' ? (
+        <div key={alert.id} className={`alert alert-${alert.alertType}`}>
+          {alert.msg}
+        </div>
+      ) : (
+        // alertのkeyでエラーが出るため
+        <div key={alert.id}></div>
+      )
+  )
   return <>{isAlert}</>
 }
 
