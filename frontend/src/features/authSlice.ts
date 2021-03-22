@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { UserData } from 'src/components/auth/Register'
 
 const initialState = {
   auth: {
@@ -12,15 +13,9 @@ const initialState = {
   error: null,
 }
 
-interface User {
-  name: string
-  email: string
-  password: string
-}
-
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userData: User, { rejectWithValue }) => {
+  async (userData: UserData, { rejectWithValue }) => {
     try {
       const url = '/api/v1/users'
       const res = await axios.post(url, userData)

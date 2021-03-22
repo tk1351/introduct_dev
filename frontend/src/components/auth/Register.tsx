@@ -1,12 +1,18 @@
 import React, { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
-import Alert from '../layout/Alert'
+import Alert, { ErrorAlert } from '../layout/Alert'
 import { registerUser } from '../../features/authSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { AppDispatch } from 'src/app/store'
+
+export interface UserData {
+  name: string
+  email: string
+  password: string
+}
 
 const Register = () => {
   const dispatch: AppDispatch = useDispatch()
@@ -37,20 +43,20 @@ const Register = () => {
       )
       setTimeout(() => dispatch(removeAlert({ id })), 5000)
     } else {
-      const userData = { name, email, password }
+      const userData: UserData = { name, email, password }
       const resultAction = await dispatch(registerUser(userData))
 
+      // フォームに入る値の成否で分岐
       if (registerUser.fulfilled.match(resultAction)) {
         unwrapResult(resultAction)
       } else if (registerUser.rejected.match(resultAction)) {
+        // FIXME: payloadがunknown型のため
         const payload = resultAction.payload as any
-        payload.errors.map(
-          (error: { id: string; msg: string; alertType: string }) => {
-            const id = uuidv4()
-            dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
-            setTimeout(() => dispatch(removeAlert({ id })), 5000)
-          }
-        )
+        payload.errors.map((error: ErrorAlert) => {
+          const id = uuidv4()
+          dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+          setTimeout(() => dispatch(removeAlert({ id })), 5000)
+        })
       }
     }
   }
