@@ -1,12 +1,11 @@
 import React, { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from '../../app/hooks'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { registerUser } from '../../features/authSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { AppDispatch } from 'src/app/store'
 
 export interface UserData {
   name: string
@@ -15,7 +14,7 @@ export interface UserData {
 }
 
 const Register = () => {
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [formData, setFormData] = useState({
     name: '',

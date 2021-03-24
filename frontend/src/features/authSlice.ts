@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from 'src/components/auth/Register'
+import setAuhtToken from '../utils/setAuthToken'
 
 const initialState = {
   auth: {
@@ -26,7 +27,27 @@ export const registerUser = createAsyncThunk(
     } catch (err) {
       const errors = err.response.data.errors
       localStorage.removeItem('token')
-      return rejectWithValue({ errors, message: 'ng' })
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const loadUser = createAsyncThunk(
+  'auth/loadUser',
+  async (_, { rejectWithValue }) => {
+    if (localStorage.token) {
+      setAuhtToken(localStorage.token)
+    }
+
+    try {
+      const url = '/api/v1/auth'
+      const res = await axios.get(url)
+      if (res.status === 200) {
+        return res.data
+      }
+    } catch (err) {
+      const error = err.response.data.msg
+      return rejectWithValue(error)
     }
   }
 )
@@ -36,7 +57,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [registerUser.pending as any]: (state, { payload }) => {
+    [registerUser.pending as any]: (state) => {
       state.status = 'loading'
     },
     [registerUser.fulfilled as any]: (state, { payload }) => {
@@ -50,6 +71,24 @@ export const authSlice = createSlice({
       state.status = 'failed'
       state.error = payload.errors
       state.auth.token = null
+      state.auth.user = null
+      state.auth.isAuthenticated = false
+      state.auth.loading = false
+    },
+    [loadUser.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [loadUser.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.auth.user = payload
+      state.auth.isAuthenticated = true
+      state.auth.loading = false
+    },
+    [loadUser.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.error = payload
+      state.auth.token = null
+      state.auth.user = null
       state.auth.isAuthenticated = false
       state.auth.loading = false
     },
