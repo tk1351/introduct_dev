@@ -22,7 +22,10 @@ const Dashboard = () => {
         <Fragment>
           <h1 className="large text-primary">Dashboard</h1>
           <p className="lead">
-            <i className="fas fa-user"> ようこそ {authUser && authUser.name}</i>
+            <i className="fas fa-user">
+              {' '}
+              ようこそ {authUser && authUser.name} さん
+            </i>
           </p>
           {profile !== null ? (
             <Fragment>has</Fragment>
