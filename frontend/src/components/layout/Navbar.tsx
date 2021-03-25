@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { logout } from '../../features/authSlice'
+import { clearProfile } from '../../features/profileSlice'
 
 const Navbar = () => {
   const dispatch = useAppDispatch()
@@ -11,10 +12,21 @@ const Navbar = () => {
   )
   const loading = useAppSelector((state) => state.auth.auth.loading)
 
+  const clearUsersState = () => {
+    dispatch(clearProfile())
+    dispatch(logout())
+  }
+
   const authLinks = (
     <ul>
       <li>
-        <a onClick={() => dispatch(logout())}>
+        <Link to="/dashboard">
+          <i className="fas fa-user"></i>{' '}
+          <span className="hide-sm">ダッシュボード</span>
+        </Link>
+      </li>
+      <li>
+        <a onClick={() => clearUsersState()}>
           <i className="fas fa-sign-out-alt"></i>{' '}
           <span className="hide-sm">ログアウト</span>
         </a>

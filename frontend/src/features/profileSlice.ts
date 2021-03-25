@@ -32,7 +32,14 @@ export const fetchCurrentProfile = createAsyncThunk(
 export const profileSlice = createSlice({
   name: 'profile',
   initialState,
-  reducers: {},
+  reducers: {
+    clearProfile(state) {
+      state.profile = null
+      state.profiles = []
+      state.loading = false
+      state.error = null
+    },
+  },
   extraReducers: {
     [fetchCurrentProfile.pending as any]: (state) => {
       state.status = 'loading'
@@ -50,5 +57,7 @@ export const profileSlice = createSlice({
     },
   },
 })
+
+export const { clearProfile } = profileSlice.actions
 
 export default profileSlice.reducer
