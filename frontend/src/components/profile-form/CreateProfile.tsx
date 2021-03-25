@@ -1,7 +1,30 @@
 import React, { useState, Fragment } from 'react'
+import { useAppDispatch } from '../../app/hooks'
+import { createProfile } from '../../features/profileSlice'
+import { setAlert, removeAlert } from '../../features/alertSlice'
+import { v4 as uuidv4 } from 'uuid'
+import Alert, { ErrorAlert } from '../layout/Alert'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { RouteComponentProps } from 'react-router-dom'
 
-const CreateProfile = () => {
-  const [formData, setFormData] = useState({
+export interface ProfileData {
+  company: string
+  website: string
+  location: string
+  bio: string
+  twitter: string
+  facebook: string
+  linkedin: string
+  youtube: string
+  instagram: string
+}
+
+interface Props extends RouteComponentProps {}
+
+const CreateProfile = ({ history }: Props) => {
+  const dispatch = useAppDispatch()
+
+  const [formData, setFormData] = useState<ProfileData>({
     company: '',
     website: '',
     location: '',
@@ -12,7 +35,7 @@ const CreateProfile = () => {
     youtube: '',
     instagram: '',
   })
-  const [displaySocialInputs, toggleSocialInputs] = useState(false)
+  const [displaySocialInputs, toggleSocialInputs] = useState<boolean>(false)
 
   const {
     company,
@@ -29,18 +52,49 @@ const CreateProfile = () => {
   const onChange = (e: { target: { name: string; value: string } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const profileData: ProfileData = formData
+    const resultAction = await dispatch(createProfile(profileData))
+
+    if (createProfile.fulfilled.match(resultAction)) {
+      unwrapResult(resultAction as any)
+      history.push('/dashboard')
+      const id = uuidv4()
+      dispatch(
+        setAlert({
+          id,
+          msg: 'プロフィールが設定できました',
+          alertType: 'success',
+        })
+      )
+      setTimeout(() => dispatch(removeAlert({ id })), 5000)
+    } else if (createProfile.rejected.match(resultAction)) {
+      // FIXME: payloadがunknown型のため
+      const payload = resultAction.payload as any
+      payload.errors.map((error: ErrorAlert) => {
+        const id = uuidv4()
+        dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+        setTimeout(() => dispatch(removeAlert({ id })), 5000)
+      })
+    }
+
+    // @to-do fulfilledの場合はsuccess alertの表示と/dashboardへのリダイレクト
+  }
   return (
     <Fragment>
+      <Alert />
       <h1 className="large text-primary">プロフィール設定</h1>
       <p className="lead">
         <i className="fas fa-user"></i> 詳細を設定してください
       </p>
       <small>* = 必要事項</small>
-      <form className="form">
+      <form className="form" onSubmit={(e) => onSubmit(e)}>
         <div className="form-group">
           <input
             type="text"
-            placeholder="Company"
+            placeholder="会社名"
             name="company"
             value={company}
             onChange={(e) => onChange(e)}
@@ -52,7 +106,7 @@ const CreateProfile = () => {
         <div className="form-group">
           <input
             type="text"
-            placeholder="Website"
+            placeholder="Webサイト"
             name="website"
             value={website}
             onChange={(e) => onChange(e)}
@@ -64,7 +118,7 @@ const CreateProfile = () => {
         <div className="form-group">
           <input
             type="text"
-            placeholder="Location"
+            placeholder="住所"
             name="location"
             value={location}
             onChange={(e) => onChange(e)}
@@ -75,7 +129,7 @@ const CreateProfile = () => {
         </div>
         <div className="form-group">
           <textarea
-            placeholder="A short bio of yourself"
+            placeholder="* 自己紹介"
             name="bio"
             value={bio}
             onChange={(e) => onChange(e)}
@@ -89,9 +143,9 @@ const CreateProfile = () => {
             type="button"
             className="btn btn-light"
           >
-            Add Social Network Links
+            SNSのリンクを追加する
           </button>
-          <span>Optional</span>
+          <span>オプション</span>
         </div>
 
         {displaySocialInputs && (
@@ -155,7 +209,7 @@ const CreateProfile = () => {
 
         <input type="submit" className="btn btn-primary my-1" />
         <a className="btn btn-light my-1" href="dashboard.html">
-          Go Back
+          戻る
         </a>
       </form>
     </Fragment>

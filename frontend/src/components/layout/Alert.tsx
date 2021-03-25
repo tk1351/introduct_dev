@@ -10,7 +10,7 @@ export interface ErrorAlert {
 const Alert = () => {
   const alerts = useSelector((state: any) => state.alert.alert)
   const isAlert = alerts.map((alert: ErrorAlert) =>
-    alert.alertType === 'danger' ? (
+    alert.alertType ? (
       <div key={alert.id} className={`alert alert-${alert.alertType}`}>
         {alert.msg}
       </div>

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import setAuthToken from '../utils/setAuthToken'
+import { ProfileData } from '../components/profile-form/CreateProfile'
 
 const initialState = {
   profile: null,
@@ -29,6 +30,20 @@ export const fetchCurrentProfile = createAsyncThunk(
   }
 )
 
+export const createProfile = createAsyncThunk(
+  'profile/createProfile',
+  async (profileData: ProfileData, { rejectWithValue }) => {
+    try {
+      const url = '/api/v1/profile'
+      const res = await axios.post(url, profileData)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data.errors
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const profileSlice = createSlice({
   name: 'profile',
   initialState,
@@ -51,6 +66,20 @@ export const profileSlice = createSlice({
       state.error = null
     },
     [fetchCurrentProfile.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
+    [createProfile.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [createProfile.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.profile = payload
+      state.loading = false
+      state.error = null
+    },
+    [createProfile.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.loading = false
       state.error = payload.errors

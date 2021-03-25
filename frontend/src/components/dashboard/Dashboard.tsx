@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchCurrentProfile } from '../../features/profileSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { Link } from 'react-router-dom'
+import Alert from '../layout/Alert'
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
@@ -20,6 +21,7 @@ const Dashboard = () => {
         <Spinner />
       ) : (
         <Fragment>
+          <Alert />
           <h1 className="large text-primary">Dashboard</h1>
           <p className="lead">
             <i className="fas fa-user">
