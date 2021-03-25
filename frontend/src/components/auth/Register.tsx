@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAppDispatch } from '../../app/hooks'
+import { Link, Redirect } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
@@ -58,6 +58,14 @@ const Register = () => {
         })
       }
     }
+  }
+
+  // login済みであればリダイレクトする
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.auth.isAuthenticated
+  )
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard" />
   }
 
   return (

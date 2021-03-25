@@ -1,7 +1,21 @@
 import React, { useState, Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { loginUser, loadUser } from '../../features/authSlice'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { v4 as uuidv4 } from 'uuid'
+import { ErrorAlert } from '../layout/Alert'
+import { removeAlert, setAlert } from '../../features/alertSlice'
+import Alert from '../layout/Alert'
+
+export interface LoginUser {
+  email: string
+  password: string
+}
 
 const Login = () => {
+  const dispatch = useAppDispatch()
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -15,10 +29,32 @@ const Login = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('Success')
+    const loginUserData: LoginUser = { email, password }
+    const resultAction = await dispatch(loginUser(loginUserData))
+
+    if (loginUser.fulfilled.match(resultAction)) {
+      unwrapResult(resultAction)
+      dispatch(loadUser())
+    } else if (loginUser.rejected.match(resultAction)) {
+      const payload = resultAction.payload as any
+      payload.errors.map((error: ErrorAlert) => {
+        const id = uuidv4()
+        dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+        setTimeout(() => dispatch(removeAlert({ id })), 5000)
+      })
+    }
+  }
+
+  // login済みであればリダイレクトする
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.auth.isAuthenticated
+  )
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard" />
   }
   return (
     <Fragment>
+      <Alert />
       <h1 className="large text-primary">ログイン</h1>
       <p className="lead">
         <i className="fas fa-user"></i> アカウントへログインする

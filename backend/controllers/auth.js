@@ -28,7 +28,7 @@ module.exports = {
       if (!user) {
         return res
           .status(400)
-          .json({ erros: [{ msg: 'ユーザーが存在しません' }] })
+          .json({ errors: [{ msg: 'ユーザーが存在しません' }] })
       }
 
       // DBのパスワードと比較する

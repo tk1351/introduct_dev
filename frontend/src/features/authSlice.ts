@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { UserData } from 'src/components/auth/Register'
+import { UserData } from '../components/auth/Register'
 import setAuhtToken from '../utils/setAuthToken'
+import { LoginUser } from '../components/auth/Login'
 
 const initialState = {
   auth: {
@@ -52,6 +53,23 @@ export const loadUser = createAsyncThunk(
   }
 )
 
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (loginUserData: LoginUser, { rejectWithValue }) => {
+    try {
+      const url = '/api/v1/auth'
+      const res = await axios.post(url, loginUserData)
+      if (res.status === 200) {
+        localStorage.setItem('token', res.data.token)
+        return res.data
+      }
+    } catch (err) {
+      const errors = err.response.data.errors
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -66,6 +84,7 @@ export const authSlice = createSlice({
       state.auth.user = payload.userData
       state.auth.isAuthenticated = true
       state.auth.loading = false
+      state.error = null
     },
     [registerUser.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
@@ -91,6 +110,20 @@ export const authSlice = createSlice({
       state.auth.user = null
       state.auth.isAuthenticated = false
       state.auth.loading = false
+    },
+    [loginUser.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [loginUser.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.auth.token = payload.token
+      state.auth.isAuthenticated = true
+      state.auth.loading = false
+      state.error = null
+    },
+    [loginUser.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.error = payload.errors
     },
   },
 })
