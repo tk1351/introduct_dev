@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from '../components/auth/Register'
-import setAuhtToken from '../utils/setAuthToken'
+import setAuthToken from '../utils/setAuthToken'
 import { LoginUser } from '../components/auth/Login'
 
 const initialState = {
@@ -37,7 +37,7 @@ export const loadUser = createAsyncThunk(
   'auth/loadUser',
   async (_, { rejectWithValue }) => {
     if (localStorage.token) {
-      setAuhtToken(localStorage.token)
+      setAuthToken(localStorage.token)
     }
 
     try {
