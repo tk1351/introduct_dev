@@ -44,6 +44,21 @@ export const createProfile = createAsyncThunk(
   }
 )
 
+export const deleteProfile = createAsyncThunk(
+  'profile/deleteProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const url = '/api/v1/profile'
+      const res = await axios.delete(url)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      console.error(err.response.data)
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const profileSlice = createSlice({
   name: 'profile',
   initialState,
@@ -80,6 +95,20 @@ export const profileSlice = createSlice({
       state.error = null
     },
     [createProfile.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
+    [deleteProfile.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [deleteProfile.fulfilled as any]: (state) => {
+      state.status = 'succeeded'
+      state.profile = null
+      state.loading = false
+      state.error = null
+    },
+    [deleteProfile.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.loading = false
       state.error = payload.errors

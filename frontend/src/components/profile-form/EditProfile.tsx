@@ -37,14 +37,11 @@ const EditProfile = ({ history }: Props) => {
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
       bio: loading || !profile.bio ? '' : profile.bio,
-      twitter: loading || !profile.social.twitter ? '' : profile.social.twitter,
-      facebook:
-        loading || !profile.social.facebook ? '' : profile.social.facebook,
-      linkedin:
-        loading || !profile.social.linkedin ? '' : profile.social.linkedin,
-      youtube: loading || !profile.social.youtube ? '' : profile.social.youtube,
-      instagram:
-        loading || !profile.social.instagram ? '' : profile.social.instagram,
+      twitter: loading || !profile.social ? '' : profile.social.twitter,
+      facebook: loading || !profile.social ? '' : profile.social.facebook,
+      linkedin: loading || !profile.social ? '' : profile.social.linkedin,
+      youtube: loading || !profile.social ? '' : profile.social.youtube,
+      instagram: loading || !profile.social ? '' : profile.social.instagram,
     })
   }, [loading])
 
@@ -88,7 +85,7 @@ const EditProfile = ({ history }: Props) => {
       payload.errors.map((error: ErrorAlert) => {
         const id = uuidv4()
         dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
-        setTimeout(() => dispatch(removeAlert({ id })), 5000)
+        setTimeout(() => dispatch(removeAlert({ id })), 3000)
       })
     }
   }

@@ -2,12 +2,15 @@ import React, { useEffect, Fragment } from 'react'
 import Spinner from '../layout/Spinner'
 import DashboardActions from './DashboardActions'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { fetchCurrentProfile } from '../../features/profileSlice'
+import { fetchCurrentProfile, deleteProfile } from '../../features/profileSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
 import Alert from '../layout/Alert'
+import { logout } from '../../features/authSlice'
 
-const Dashboard = () => {
+interface Props extends RouteComponentProps {}
+
+const Dashboard = ({ history }: Props) => {
   const dispatch = useAppDispatch()
   const authUser: any = useAppSelector((state) => state.auth.auth.user)
   const profile = useAppSelector((state) => state.profile.profile)
@@ -16,6 +19,16 @@ const Dashboard = () => {
     const resultAction = dispatch(fetchCurrentProfile())
     unwrapResult(resultAction as any)
   }, [])
+
+  const deleteAccount = async () => {
+    if (window.confirm('アカウントを削除してもよろしいですか？')) {
+      const resultAction = await dispatch(deleteProfile())
+      if (deleteProfile.fulfilled.match(resultAction)) {
+        await dispatch(logout())
+        history.push('/')
+      }
+    }
+  }
   return (
     <>
       {profile && loading === null ? (
@@ -23,7 +36,7 @@ const Dashboard = () => {
       ) : (
         <Fragment>
           <Alert />
-          <h1 className="large text-primary">Dashboard</h1>
+          <h1 className="large text-primary">ダッシュボード</h1>
           <p className="lead">
             <i className="fas fa-user">
               {' '}
@@ -33,6 +46,14 @@ const Dashboard = () => {
           {profile !== null ? (
             <Fragment>
               <DashboardActions />
+              <div className="my-2">
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteAccount()}
+                >
+                  <i className="fas fa-user-minus"></i> アカウントの削除
+                </button>
+              </div>
             </Fragment>
           ) : (
             <Fragment>

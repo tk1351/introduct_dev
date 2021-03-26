@@ -69,7 +69,7 @@ const CreateProfile = ({ history }: Props) => {
           alertType: 'success',
         })
       )
-      setTimeout(() => dispatch(removeAlert({ id })), 5000)
+      setTimeout(() => dispatch(removeAlert({ id })), 3000)
     } else if (createProfile.rejected.match(resultAction)) {
       // FIXME: payloadがunknown型のため
       const payload = resultAction.payload as any

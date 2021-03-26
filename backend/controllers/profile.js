@@ -1,5 +1,6 @@
 const Profile = require('../models/Profile')
 const User = require('../models/User')
+const Post = require('../models/Post')
 const { validationResult } = require('express-validator')
 
 module.exports = {
@@ -106,9 +107,9 @@ module.exports = {
   },
   deleteProfile: async (req, res) => {
     try {
-      // @todo - ユーザーの投稿も削除する
       await Profile.findOneAndRemove({ user: req.user.id })
       await User.findOneAndRemove({ _id: req.user.id })
+      await Post.deleteMany({ user: req.user.id })
       res.json({ msg: 'ユーザーは削除されました' })
     } catch (err) {
       console.error(err.message)
