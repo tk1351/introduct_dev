@@ -1,28 +1,19 @@
-import React, { useState, Fragment } from 'react'
-import { useAppDispatch } from '../../app/hooks'
-import { createProfile } from '../../features/profileSlice'
+import React, { useState, Fragment, useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { fetchCurrentProfile, createProfile } from '../../features/profileSlice'
 import { setAlert, removeAlert } from '../../features/alertSlice'
+import { ProfileData } from './CreateProfile'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { RouteComponentProps, Link } from 'react-router-dom'
 
-export interface ProfileData {
-  company: string
-  website: string
-  location: string
-  bio: string
-  twitter: string
-  facebook: string
-  linkedin: string
-  youtube: string
-  instagram: string
-}
-
 interface Props extends RouteComponentProps {}
 
-const CreateProfile = ({ history }: Props) => {
+const EditProfile = ({ history }: Props) => {
   const dispatch = useAppDispatch()
+  const profile: any = useAppSelector((state) => state.profile.profile)
+  const loading = useAppSelector((state) => state.profile.loading)
 
   const [formData, setFormData] = useState<ProfileData>({
     company: '',
@@ -35,7 +26,27 @@ const CreateProfile = ({ history }: Props) => {
     youtube: '',
     instagram: '',
   })
+
   const [displaySocialInputs, toggleSocialInputs] = useState<boolean>(false)
+
+  useEffect(() => {
+    dispatch(fetchCurrentProfile())
+
+    setFormData({
+      company: loading || !profile.company ? '' : profile.company,
+      website: loading || !profile.website ? '' : profile.website,
+      location: loading || !profile.location ? '' : profile.location,
+      bio: loading || !profile.bio ? '' : profile.bio,
+      twitter: loading || !profile.social.twitter ? '' : profile.social.twitter,
+      facebook:
+        loading || !profile.social.facebook ? '' : profile.social.facebook,
+      linkedin:
+        loading || !profile.social.linkedin ? '' : profile.social.linkedin,
+      youtube: loading || !profile.social.youtube ? '' : profile.social.youtube,
+      instagram:
+        loading || !profile.social.instagram ? '' : profile.social.instagram,
+    })
+  }, [loading])
 
   const {
     company,
@@ -55,6 +66,7 @@ const CreateProfile = ({ history }: Props) => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const profileData: ProfileData = formData
     const resultAction = await dispatch(createProfile(profileData))
 
@@ -65,7 +77,7 @@ const CreateProfile = ({ history }: Props) => {
       dispatch(
         setAlert({
           id,
-          msg: 'プロフィールが設定できました',
+          msg: 'プロフィールが編集できました',
           alertType: 'success',
         })
       )
@@ -83,7 +95,7 @@ const CreateProfile = ({ history }: Props) => {
   return (
     <Fragment>
       <Alert />
-      <h1 className="large text-primary">プロフィール設定</h1>
+      <h1 className="large text-primary">プロフィールの編集</h1>
       <p className="lead">
         <i className="fas fa-user"></i> 詳細を設定してください
       </p>
@@ -214,4 +226,4 @@ const CreateProfile = ({ history }: Props) => {
   )
 }
 
-export default CreateProfile
+export default EditProfile

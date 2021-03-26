@@ -1,5 +1,6 @@
 import React, { useEffect, Fragment } from 'react'
 import Spinner from '../layout/Spinner'
+import DashboardActions from './DashboardActions'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchCurrentProfile } from '../../features/profileSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -30,7 +31,9 @@ const Dashboard = () => {
             </i>
           </p>
           {profile !== null ? (
-            <Fragment>has</Fragment>
+            <Fragment>
+              <DashboardActions />
+            </Fragment>
           ) : (
             <Fragment>
               <p>プロフィールが設定されていません。設定してください。</p>
