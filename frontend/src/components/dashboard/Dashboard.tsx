@@ -2,6 +2,7 @@ import React, { useEffect, Fragment } from 'react'
 import Spinner from '../layout/Spinner'
 import DashboardActions from './DashboardActions'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 import { fetchCurrentProfile, deleteProfile } from '../../features/profileSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { Link, RouteComponentProps } from 'react-router-dom'
@@ -12,13 +13,16 @@ interface Props extends RouteComponentProps {}
 
 const Dashboard = ({ history }: Props) => {
   const dispatch = useAppDispatch()
-  const authUser: any = useAppSelector((state) => state.auth.auth.user)
-  const profile = useAppSelector((state) => state.profile.profile)
-  const loading = useAppSelector((state) => state.profile.loading)
+  // FIXME: authUserのany
+  const authUser: any = useAppSelector(
+    (state: RootState) => state.auth.auth.user
+  )
+  const profile = useAppSelector((state: RootState) => state.profile.profile)
+  const loading = useAppSelector((state: RootState) => state.profile.loading)
   useEffect(() => {
     const resultAction = dispatch(fetchCurrentProfile())
     unwrapResult(resultAction as any)
-  }, [])
+  }, [fetchCurrentProfile()])
 
   const deleteAccount = async () => {
     if (window.confirm('アカウントを削除してもよろしいですか？')) {

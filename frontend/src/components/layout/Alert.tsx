@@ -1,5 +1,6 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 
 export interface ErrorAlert {
   id: string
@@ -8,7 +9,7 @@ export interface ErrorAlert {
 }
 
 const Alert = () => {
-  const alerts = useSelector((state: any) => state.alert.alert)
+  const alerts = useAppSelector((state: RootState) => state.alert.alert)
   const isAlert = alerts.map((alert: ErrorAlert) =>
     alert.alertType ? (
       <div key={alert.id} className={`alert alert-${alert.alertType}`}>

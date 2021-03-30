@@ -1,6 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const initialState = {
+interface AlertState {
+  alert: {
+    id: string
+    msg: string
+    alertType: string
+  }[]
+}
+
+const initialState: AlertState = {
   alert: [
     {
       id: '',

@@ -1,13 +1,13 @@
 import React, { Fragment, useState } from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { registerUser } from '../../features/authSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
-
-export interface UserData {
+export interface RegisterUserData {
   name: string
   email: string
   password: string
@@ -42,7 +42,7 @@ const Register = () => {
       )
       setTimeout(() => dispatch(removeAlert({ id })), 5000)
     } else {
-      const userData: UserData = { name, email, password }
+      const userData: RegisterUserData = { name, email, password }
       const resultAction = await dispatch(registerUser(userData))
 
       // フォームに入る値の成否で分岐
@@ -62,7 +62,7 @@ const Register = () => {
 
   // login済みであればリダイレクトする
   const isAuthenticated = useAppSelector(
-    (state) => state.auth.auth.isAuthenticated
+    (state: RootState) => state.auth.auth.isAuthenticated
   )
   if (isAuthenticated) {
     return <Redirect to="/dashboard" />

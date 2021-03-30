@@ -1,5 +1,6 @@
 import React, { useState, Fragment, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 import { fetchCurrentProfile, createProfile } from '../../features/profileSlice'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { ProfileData } from './CreateProfile'
@@ -12,10 +13,14 @@ interface Props extends RouteComponentProps {}
 
 const EditProfile = ({ history }: Props) => {
   const dispatch = useAppDispatch()
-  const profile: any = useAppSelector((state) => state.profile.profile)
-  const loading = useAppSelector((state) => state.profile.loading)
+  // FIXME: profileのany
+  const profile: any = useAppSelector(
+    (state: RootState) => state.profile.profile
+  )
+  const loading = useAppSelector((state: RootState) => state.profile.loading)
 
   const [formData, setFormData] = useState<ProfileData>({
+    _id: '',
     company: '',
     website: '',
     location: '',
@@ -25,6 +30,14 @@ const EditProfile = ({ history }: Props) => {
     linkedin: '',
     youtube: '',
     instagram: '',
+    user: {
+      _id: '',
+      name: '',
+      avatar: '',
+      email: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   })
 
   const [displaySocialInputs, toggleSocialInputs] = useState<boolean>(false)
@@ -33,6 +46,7 @@ const EditProfile = ({ history }: Props) => {
     dispatch(fetchCurrentProfile())
 
     setFormData({
+      _id: loading || !profile._id ? '' : profile._id,
       company: loading || !profile.company ? '' : profile.company,
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
@@ -42,8 +56,9 @@ const EditProfile = ({ history }: Props) => {
       linkedin: loading || !profile.social ? '' : profile.social.linkedin,
       youtube: loading || !profile.social ? '' : profile.social.youtube,
       instagram: loading || !profile.social ? '' : profile.social.instagram,
+      user: loading || !profile.user ? {} : profile.user,
     })
-  }, [loading])
+  }, [loading, fetchCurrentProfile()])
 
   const {
     company,
@@ -68,7 +83,7 @@ const EditProfile = ({ history }: Props) => {
     const resultAction = await dispatch(createProfile(profileData))
 
     if (createProfile.fulfilled.match(resultAction)) {
-      unwrapResult(resultAction as any)
+      unwrapResult(resultAction)
       history.push('/dashboard')
       const id = uuidv4()
       dispatch(

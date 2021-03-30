@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { RootState } from '../..//app/store'
 import { loginUser, loadUser } from '../../features/authSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid'
@@ -36,6 +37,7 @@ const Login = () => {
       unwrapResult(resultAction)
       dispatch(loadUser())
     } else if (loginUser.rejected.match(resultAction)) {
+      // FIXME: payloadのany
       const payload = resultAction.payload as any
       payload.errors.map((error: ErrorAlert) => {
         const id = uuidv4()
@@ -47,7 +49,7 @@ const Login = () => {
 
   // login済みであればリダイレクトする
   const isAuthenticated = useAppSelector(
-    (state) => state.auth.auth.isAuthenticated
+    (state: RootState) => state.auth.auth.isAuthenticated
   )
   if (isAuthenticated) {
     return <Redirect to="/dashboard" />

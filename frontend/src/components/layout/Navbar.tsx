@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 import { logout } from '../../features/authSlice'
 import { clearProfile } from '../../features/profileSlice'
 
@@ -8,9 +9,9 @@ const Navbar = () => {
   const dispatch = useAppDispatch()
 
   const isAuthenticated = useAppSelector(
-    (state) => state.auth.auth.isAuthenticated
+    (state: RootState) => state.auth.auth.isAuthenticated
   )
-  const loading = useAppSelector((state) => state.auth.auth.loading)
+  const loading = useAppSelector((state: RootState) => state.auth.auth.loading)
 
   const clearUsersState = () => {
     dispatch(clearProfile())
@@ -19,6 +20,9 @@ const Navbar = () => {
 
   const authLinks = (
     <ul>
+      <li>
+        <Link to="/profiles">プロフィール</Link>
+      </li>
       <li>
         <Link to="/dashboard">
           <i className="fas fa-user"></i>{' '}
@@ -36,6 +40,9 @@ const Navbar = () => {
 
   const guestLinks = (
     <ul>
+      <li>
+        <Link to="/profiles">プロフィール</Link>
+      </li>
       <li>
         <Link to="/register">ユーザー登録</Link>
       </li>

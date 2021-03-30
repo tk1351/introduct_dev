@@ -1,10 +1,29 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { UserData } from '../components/auth/Register'
+import { RegisterUserData } from '../components/auth/Register'
 import setAuthToken from '../utils/setAuthToken'
 import { LoginUser } from '../components/auth/Login'
 
-const initialState = {
+export interface UserData {
+  _id: string
+  name: string
+  email: string
+  avatar: string
+  createdAt: Date
+  updatedAt: Date
+}
+interface AuthState {
+  auth: {
+    token: string | null
+    isAuthenticated: boolean
+    loading: boolean
+    user: UserData | null
+  }
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
+}
+
+const initialState: AuthState = {
   auth: {
     token: localStorage.getItem('token'),
     isAuthenticated: false,
@@ -17,7 +36,7 @@ const initialState = {
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userData: UserData, { rejectWithValue }) => {
+  async (userData: RegisterUserData, { rejectWithValue }) => {
     try {
       const url = '/api/v1/users'
       const res = await axios.post(url, userData)

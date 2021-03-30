@@ -1,12 +1,13 @@
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 
 const PrivateRoute = ({ component: Component, ...rest }: any) => {
   const isAuthenticated = useAppSelector(
-    (state) => state.auth.auth.isAuthenticated
+    (state: RootState) => state.auth.auth.isAuthenticated
   )
-  const loading = useAppSelector((state) => state.auth.auth.loading)
+  const loading = useAppSelector((state: RootState) => state.auth.auth.loading)
   return (
     // <>
     //   {!isAuthenticated && !loading ? (

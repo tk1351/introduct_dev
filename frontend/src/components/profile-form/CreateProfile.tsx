@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { RouteComponentProps, Link } from 'react-router-dom'
+import { UserData } from '../../features/authSlice'
 
 export interface ProfileData {
+  _id: string
   company: string
   website: string
   location: string
@@ -17,6 +19,7 @@ export interface ProfileData {
   linkedin: string
   youtube: string
   instagram: string
+  user: UserData
 }
 
 interface Props extends RouteComponentProps {}
@@ -25,6 +28,7 @@ const CreateProfile = ({ history }: Props) => {
   const dispatch = useAppDispatch()
 
   const [formData, setFormData] = useState<ProfileData>({
+    _id: '',
     company: '',
     website: '',
     location: '',
@@ -34,6 +38,14 @@ const CreateProfile = ({ history }: Props) => {
     linkedin: '',
     youtube: '',
     instagram: '',
+    user: {
+      _id: '',
+      name: '',
+      avatar: '',
+      email: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   })
   const [displaySocialInputs, toggleSocialInputs] = useState<boolean>(false)
 
@@ -59,7 +71,7 @@ const CreateProfile = ({ history }: Props) => {
     const resultAction = await dispatch(createProfile(profileData))
 
     if (createProfile.fulfilled.match(resultAction)) {
-      unwrapResult(resultAction as any)
+      unwrapResult(resultAction)
       history.push('/dashboard')
       const id = uuidv4()
       dispatch(

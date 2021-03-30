@@ -1,9 +1,17 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 import setAuthToken from '../utils/setAuthToken'
 import { ProfileData } from '../components/profile-form/CreateProfile'
 
-const initialState = {
+interface ProfileState {
+  profile: ProfileData | null
+  profiles: ProfileData[]
+  loading: boolean
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
+}
+
+const initialState: ProfileState = {
   profile: null,
   profiles: [],
   loading: true,
@@ -24,7 +32,36 @@ export const fetchCurrentProfile = createAsyncThunk(
       return res.data
     } catch (err) {
       const errors = err.response.data.msg
-      console.error(err.response.data)
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const fetchAllProfile = createAsyncThunk(
+  'profile/fetchAllProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const url = '/api/v1/profile'
+      const res = await axios.get(url)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      console.error(errors)
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const fetchProfileByUid = createAsyncThunk(
+  'profile/fetchProfileByUid',
+  async (user_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/profile/user/${user_id}`
+      const res = await axios.get(url)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      console.error(errors)
       return rejectWithValue({ errors })
     }
   }
@@ -74,7 +111,10 @@ export const profileSlice = createSlice({
     [fetchCurrentProfile.pending as any]: (state) => {
       state.status = 'loading'
     },
-    [fetchCurrentProfile.fulfilled as any]: (state, { payload }) => {
+    [fetchCurrentProfile.fulfilled as any]: (
+      state,
+      { payload }: PayloadAction<ProfileData>
+    ) => {
       state.status = 'succeeded'
       state.profile = payload
       state.loading = false
@@ -85,7 +125,30 @@ export const profileSlice = createSlice({
       state.loading = false
       state.error = payload.errors
     },
+    [fetchAllProfile.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [fetchAllProfile.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.profiles = payload
+      state.loading = false
+      state.error = null
+    },
+    [fetchAllProfile.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
     [createProfile.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [fetchProfileByUid.fulfilled as any]: (state) => {
+      state.status = 'succeeded'
+    },
+    [fetchProfileByUid.rejected as any]: (state) => {
+      state.status = 'failed'
+    },
+    [fetchProfileByUid.pending as any]: (state) => {
       state.status = 'loading'
     },
     [createProfile.fulfilled as any]: (state, { payload }) => {

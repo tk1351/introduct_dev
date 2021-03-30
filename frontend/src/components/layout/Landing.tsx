@@ -1,10 +1,11 @@
 import React from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import { useAppSelector } from '../../app/hooks'
+import { RootState } from '../../app/store'
 
 const Landing = () => {
   const isAuthenticated = useAppSelector(
-    (state) => state.auth.auth.isAuthenticated
+    (state: RootState) => state.auth.auth.isAuthenticated
   )
 
   if (isAuthenticated) {
