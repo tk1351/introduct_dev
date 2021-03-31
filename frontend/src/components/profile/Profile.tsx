@@ -1,5 +1,7 @@
 import React, { Fragment, useEffect, FC } from 'react'
 import Spinner from '../layout/Spinner'
+import ProfileTop from './ProfileTop'
+import ProfileAbout from './ProfileAbout'
 import { Link } from 'react-router-dom'
 import { RootState } from '../../app/store'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
@@ -34,6 +36,10 @@ const Profile: FC<PageProps> = ({ match }) => {
                 プロフィールを編集する
               </Link>
             )}
+          <div className="profile-grid my-1">
+            <ProfileTop profile={profile} />
+            <ProfileAbout profile={profile} />
+          </div>
         </Fragment>
       )}
     </Fragment>

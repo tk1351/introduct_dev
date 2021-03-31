@@ -14,11 +14,13 @@ export interface ProfileData {
   website: string
   location: string
   bio: string
-  twitter: string
-  facebook: string
-  linkedin: string
-  youtube: string
-  instagram: string
+  social: {
+    twitter: string
+    facebook: string
+    linkedin: string
+    youtube: string
+    instagram: string
+  }
   user: UserData
 }
 
@@ -33,11 +35,13 @@ const CreateProfile = ({ history }: Props) => {
     website: '',
     location: '',
     bio: '',
-    twitter: '',
-    facebook: '',
-    linkedin: '',
-    youtube: '',
-    instagram: '',
+    social: {
+      twitter: '',
+      facebook: '',
+      linkedin: '',
+      youtube: '',
+      instagram: '',
+    },
     user: {
       _id: '',
       name: '',
@@ -54,11 +58,7 @@ const CreateProfile = ({ history }: Props) => {
     website,
     location,
     bio,
-    twitter,
-    facebook,
-    linkedin,
-    youtube,
-    instagram,
+    social: { twitter, facebook, linkedin, youtube, instagram },
   } = formData
 
   const onChange = (e: { target: { name: string; value: string } }) => {

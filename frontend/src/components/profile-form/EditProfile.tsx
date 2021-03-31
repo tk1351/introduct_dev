@@ -25,11 +25,13 @@ const EditProfile = ({ history }: Props) => {
     website: '',
     location: '',
     bio: '',
-    twitter: '',
-    facebook: '',
-    linkedin: '',
-    youtube: '',
-    instagram: '',
+    social: {
+      twitter: '',
+      facebook: '',
+      linkedin: '',
+      youtube: '',
+      instagram: '',
+    },
     user: {
       _id: '',
       name: '',
@@ -51,11 +53,14 @@ const EditProfile = ({ history }: Props) => {
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
       bio: loading || !profile.bio ? '' : profile.bio,
-      twitter: loading || !profile.social ? '' : profile.social.twitter,
-      facebook: loading || !profile.social ? '' : profile.social.facebook,
-      linkedin: loading || !profile.social ? '' : profile.social.linkedin,
-      youtube: loading || !profile.social ? '' : profile.social.youtube,
-      instagram: loading || !profile.social ? '' : profile.social.instagram,
+      // social: {
+      //   twitter: loading || !profile.social ? '' : profile.social.twitter,
+      //   facebook: loading || !profile.social ? '' : profile.social.facebook,
+      //   linkedin: loading || !profile.social ? '' : profile.social.linkedin,
+      //   youtube: loading || !profile.social ? '' : profile.social.youtube,
+      //   instagram: loading || !profile.social ? '' : profile.social.instagram,
+      // },
+      social: loading || !profile.social ? {} : profile.social,
       user: loading || !profile.user ? {} : profile.user,
     })
   }, [loading])
@@ -65,11 +70,7 @@ const EditProfile = ({ history }: Props) => {
     website,
     location,
     bio,
-    twitter,
-    facebook,
-    linkedin,
-    youtube,
-    instagram,
+    social: { twitter, facebook, linkedin, youtube, instagram },
   } = formData
 
   const onChange = (e: { target: { name: string; value: string } }) => {
