@@ -61,7 +61,6 @@ export const fetchProfileByUid = createAsyncThunk(
       return res.data
     } catch (err) {
       const errors = err.response.data
-      console.error(errors)
       return rejectWithValue({ errors })
     }
   }
@@ -139,16 +138,21 @@ export const profileSlice = createSlice({
       state.loading = false
       state.error = payload.errors
     },
-    [createProfile.pending as any]: (state) => {
+    [fetchProfileByUid.pending as any]: (state) => {
       state.status = 'loading'
     },
-    [fetchProfileByUid.fulfilled as any]: (state) => {
+    [fetchProfileByUid.fulfilled as any]: (state, { payload }) => {
       state.status = 'succeeded'
+      state.profile = payload
+      state.loading = false
+      state.error = null
     },
-    [fetchProfileByUid.rejected as any]: (state) => {
+    [fetchProfileByUid.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
     },
-    [fetchProfileByUid.pending as any]: (state) => {
+    [createProfile.pending as any]: (state) => {
       state.status = 'loading'
     },
     [createProfile.fulfilled as any]: (state, { payload }) => {

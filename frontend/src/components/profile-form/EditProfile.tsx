@@ -58,7 +58,7 @@ const EditProfile = ({ history }: Props) => {
       instagram: loading || !profile.social ? '' : profile.social.instagram,
       user: loading || !profile.user ? {} : profile.user,
     })
-  }, [loading, fetchCurrentProfile()])
+  }, [loading])
 
   const {
     company,

@@ -11,7 +11,7 @@ const Profiles = () => {
   const loading = useAppSelector((state: RootState) => state.profile.loading)
   useEffect(() => {
     dispatch(fetchAllProfile())
-  }, [fetchAllProfile()])
+  }, [])
   return (
     <Fragment>
       {loading ? (

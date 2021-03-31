@@ -16,7 +16,7 @@ const ProfileItem: FC<Props> = ({ profile }) => {
         <p className="my-1">
           {profile.location && <span>{profile.location}</span>}
         </p>
-        <Link to={`/profile/${profile._id}`} className="btn btn-primary">
+        <Link to={`/profile/${profile.user._id}`} className="btn btn-primary">
           プロフィールを確認する
         </Link>
       </div>

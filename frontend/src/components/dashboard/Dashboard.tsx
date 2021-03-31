@@ -22,7 +22,7 @@ const Dashboard = ({ history }: Props) => {
   useEffect(() => {
     const resultAction = dispatch(fetchCurrentProfile())
     unwrapResult(resultAction as any)
-  }, [fetchCurrentProfile()])
+  }, [])
 
   const deleteAccount = async () => {
     if (window.confirm('アカウントを削除してもよろしいですか？')) {
