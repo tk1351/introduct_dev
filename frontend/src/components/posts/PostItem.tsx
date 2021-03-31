@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
-import { PostData } from '../../features/postSlice'
-import { useAppSelector } from '../../app/hooks'
+import React, { FC, useState } from 'react'
+import { PostData, addLike, removeLike } from '../../features/postSlice'
+import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { Link } from 'react-router-dom'
 import Moment from 'react-moment'
@@ -10,7 +10,25 @@ type Props = {
 }
 
 const PostItem: FC<Props> = ({ post }) => {
+  const dispatch = useAppDispatch()
+
   const auth = useAppSelector((state: RootState) => state.auth)
+  const initialHasLike = post.likes.some(
+    (like) => like.user._id === auth.auth.user?._id
+  )
+
+  const [hasLike, setHasLike] = useState(initialHasLike)
+
+  const clickLikeButton = () => {
+    if (hasLike) {
+      dispatch(removeLike(post._id))
+      setHasLike(!hasLike)
+    } else {
+      dispatch(addLike(post._id))
+      setHasLike(!hasLike)
+    }
+  }
+
   return (
     <div className="post bg-white p-1 my-1">
       <div>
@@ -25,7 +43,11 @@ const PostItem: FC<Props> = ({ post }) => {
         <p className="post-date">
           Posted on <Moment format="YYYY/MM/DD">{post.createdAt}</Moment>
         </p>
-        <button type="button" className="btn btn-light">
+        <button
+          onClick={clickLikeButton}
+          type="button"
+          className="btn btn-light"
+        >
           <i className="fas fa-thumbs-up"></i>{' '}
           <span>
             {post.likes.length > 0 && <span>{post.likes.length}</span>}

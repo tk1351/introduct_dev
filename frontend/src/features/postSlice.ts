@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from './authSlice'
+import { RootState } from '../app/store'
 
 export interface PostData {
   _id: string
@@ -37,11 +38,40 @@ export const fetchPosts = createAsyncThunk(
   'post/fetchPosts',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get('/api/v1/posts')
+      const url = '/api/v1/posts'
+      const res = await axios.get(url)
       return res.data
     } catch (err) {
       const errors = err.response.data
       console.error(errors)
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const addLike = createAsyncThunk(
+  'post/addLike',
+  async (post_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/posts/like/${post_id}`
+      const res = await axios.put(url)
+      return { id: post_id, likes: res.data }
+    } catch (err) {
+      const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const removeLike = createAsyncThunk(
+  'post/removeLike',
+  async (post_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/posts/unlike/${post_id}`
+      const res = await axios.put(url)
+      return { id: post_id, likes: res.data }
+    } catch (err) {
+      const errors = err.response.data
       return rejectWithValue({ errors })
     }
   }
@@ -64,6 +94,41 @@ export const postSlice = createSlice({
     [fetchPosts.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.posts = []
+      state.loading = false
+      state.error = payload.errors
+    },
+    [addLike.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [addLike.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      // どのpostをlikeしたか判別
+      const targetPostIndex = state.posts.findIndex(
+        (post: { _id: string }) => post._id === payload.id
+      )
+      state.posts[targetPostIndex].likes = payload.likes
+      state.loading = false
+      state.error = null
+    },
+    [addLike.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
+    [removeLike.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [removeLike.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      const targetPostIndex = state.posts.findIndex(
+        (post: { _id: string }) => post._id === payload.id
+      )
+      state.posts[targetPostIndex].likes = payload.likes
+      state.loading = false
+      state.error = null
+    },
+    [removeLike.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
       state.loading = false
       state.error = payload.errors
     },

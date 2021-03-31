@@ -23,6 +23,7 @@ router.post(
   postsController.createComment
 )
 router.put('/like/:post_id', auth, postsController.likePost)
+router.put('/unlike/:post_id', auth, postsController.unlikePost)
 router.delete('/:post_id', auth, postsController.deletePost)
 router.delete(
   '/comment/:post_id/:comment_id',

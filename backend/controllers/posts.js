@@ -104,6 +104,28 @@ module.exports = {
       res.status(500).send('Server Error')
     }
   },
+  unlikePost: async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.post_id)
+      if (!post) {
+        return res.status(404).json({ msg: '投稿がありません' })
+      }
+
+      if (!post.likes.some((like) => like.user.toString() === req.user.id)) {
+        return res.status(404).json({ msg: '投稿にlikeがありません' })
+      }
+
+      post.likes = post.likes.filter(
+        ({ user }) => user.toString() !== req.user.id
+      )
+
+      await post.save()
+      res.json(post.likes)
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  },
   deletePost: async (req, res) => {
     try {
       const post = await Post.findById(req.params.post_id)
