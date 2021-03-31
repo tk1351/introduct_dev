@@ -2,13 +2,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from './authSlice'
 
-interface PostData {
+export interface PostData {
   _id: string
   title: string
   text: string
   image: string
   url: string
-  user: UserData
+  user: string
+  name: string
+  avatar: string
   likes: [{ user: UserData }]
   comments: [{ user: UserData; text: string; date: Date }]
   createdAt: Date
