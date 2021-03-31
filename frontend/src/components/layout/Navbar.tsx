@@ -24,6 +24,9 @@ const Navbar = () => {
         <Link to="/profiles">プロフィール</Link>
       </li>
       <li>
+        <Link to="/posts">記事一覧</Link>
+      </li>
+      <li>
         <Link to="/dashboard">
           <i className="fas fa-user"></i>{' '}
           <span className="hide-sm">ダッシュボード</span>
