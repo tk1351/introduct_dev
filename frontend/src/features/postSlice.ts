@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from './authSlice'
-import { RootState } from '../app/store'
 
 export interface PostData {
   _id: string
@@ -77,6 +76,20 @@ export const removeLike = createAsyncThunk(
   }
 )
 
+export const deletePost = createAsyncThunk(
+  'post/deletePost',
+  async (post_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/posts/${post_id}`
+      const res = await axios.delete(url)
+      return { id: post_id, ...res.data }
+    } catch (err) {
+      const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -128,6 +141,23 @@ export const postSlice = createSlice({
       state.error = null
     },
     [removeLike.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
+    [deletePost.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [deletePost.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      const deletePostIndex = state.posts.findIndex(
+        (post: { _id: string }) => post._id === payload.id
+      )
+      state.posts.splice(deletePostIndex, 1)
+      state.loading = false
+      state.error = null
+    },
+    [deletePost.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.loading = false
       state.error = payload.errors

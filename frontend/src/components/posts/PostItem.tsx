@@ -1,5 +1,10 @@
 import React, { FC, useState } from 'react'
-import { PostData, addLike, removeLike } from '../../features/postSlice'
+import {
+  PostData,
+  addLike,
+  removeLike,
+  deletePost,
+} from '../../features/postSlice'
 import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { Link } from 'react-router-dom'
@@ -27,6 +32,13 @@ const PostItem: FC<Props> = ({ post }) => {
       dispatch(addLike(post._id))
       setHasLike(!hasLike)
     }
+  }
+
+  const onDeletePostClicked = async () => {
+    if (window.confirm('投稿を削除してもよろしいですか？')) {
+      await dispatch(deletePost(post._id))
+    }
+    // @to-do payload.msgをsetAlertで表示
   }
 
   return (
@@ -60,7 +72,11 @@ const PostItem: FC<Props> = ({ post }) => {
           )}
         </Link>
         {!auth.auth.loading && post.user === auth.auth.user?._id && (
-          <button type="button" className="btn btn-danger">
+          <button
+            onClick={onDeletePostClicked}
+            type="button"
+            className="btn btn-danger"
+          >
             <i className="fas fa-times"></i>
           </button>
         )}
