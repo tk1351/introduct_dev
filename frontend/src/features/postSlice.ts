@@ -48,6 +48,20 @@ export const fetchPosts = createAsyncThunk(
   }
 )
 
+export const fetchSinglePost = createAsyncThunk(
+  'post/fetchSinglePost',
+  async (post_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/posts/${post_id}`
+      const res = await axios.get(url)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const addPost = createAsyncThunk(
   '/post/addPost',
   async (postData: PostData, { rejectWithValue }) => {
@@ -121,6 +135,21 @@ export const postSlice = createSlice({
     [fetchPosts.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.posts = []
+      state.loading = false
+      state.error = payload.errors
+    },
+    [fetchSinglePost.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [fetchSinglePost.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.post = payload
+      state.loading = false
+      state.error = null
+    },
+    [fetchSinglePost.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.post = null
       state.loading = false
       state.error = payload.errors
     },

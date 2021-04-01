@@ -19,20 +19,18 @@ type Props = {
 const PostItem: FC<Props> = ({ post }) => {
   const dispatch = useAppDispatch()
 
-  const auth = useAppSelector((state: RootState) => state.auth)
-  const initialHasLike = post.likes.some(
-    (like) => like.user === auth.auth.user?._id
-  )
+  const auth = useAppSelector((state: RootState) => state.auth.auth)
+  const initialHasLike = post.likes.some((like) => like.user === auth.user?._id)
 
   const [hasLike, setHasLike] = useState(initialHasLike)
 
   const clickLikeButton = () => {
     if (hasLike) {
       dispatch(removeLike(post._id))
-      setHasLike(!hasLike)
+      setHasLike(false)
     } else {
       dispatch(addLike(post._id))
-      setHasLike(!hasLike)
+      setHasLike(true)
     }
   }
 
@@ -84,7 +82,10 @@ const PostItem: FC<Props> = ({ post }) => {
             <span className="comment-count">{post.comments.length}</span>
           )}
         </Link>
-        {!auth.auth.loading && post.user === auth.auth.user?._id && (
+        <Link to={`/post/${post._id}`} className="btn btn-primary">
+          詳細
+        </Link>
+        {!auth.loading && post.user === auth.user?._id && (
           <button
             onClick={onDeletePostClicked}
             type="button"
