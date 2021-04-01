@@ -11,8 +11,8 @@ export interface PostData {
   user: string
   name: string
   avatar: string
-  likes: [{ user: UserData }]
-  comments: [{ user: UserData; text: string; date: Date }]
+  likes: [{ user: string }]
+  comments: [{ user: string; text: string; date: Date }]
   createdAt: Date
   updatedAt: Date
 }
@@ -43,6 +43,20 @@ export const fetchPosts = createAsyncThunk(
     } catch (err) {
       const errors = err.response.data
       console.error(errors)
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const addPost = createAsyncThunk(
+  '/post/addPost',
+  async (postData: PostData, { rejectWithValue }) => {
+    try {
+      const url = '/api/v1/posts'
+      const res = await axios.post(url, postData)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data.errors
       return rejectWithValue({ errors })
     }
   }
@@ -84,7 +98,7 @@ export const deletePost = createAsyncThunk(
       const res = await axios.delete(url)
       return { id: post_id, ...res.data }
     } catch (err) {
-      const errors = err.response.data
+      const errors = err.response.data.errors
       return rejectWithValue({ errors })
     }
   }
@@ -107,6 +121,20 @@ export const postSlice = createSlice({
     [fetchPosts.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.posts = []
+      state.loading = false
+      state.error = payload.errors
+    },
+    [addPost.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [addPost.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.posts = [...state.posts, payload]
+      state.loading = false
+      state.error = null
+    },
+    [addPost.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
       state.loading = false
       state.error = payload.errors
     },

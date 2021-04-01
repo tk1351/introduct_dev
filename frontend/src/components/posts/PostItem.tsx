@@ -9,6 +9,8 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { Link } from 'react-router-dom'
 import Moment from 'react-moment'
+import { v4 as uuidv4 } from 'uuid'
+import { setAlert, removeAlert } from '../../features/alertSlice'
 
 type Props = {
   post: PostData
@@ -19,7 +21,7 @@ const PostItem: FC<Props> = ({ post }) => {
 
   const auth = useAppSelector((state: RootState) => state.auth)
   const initialHasLike = post.likes.some(
-    (like) => like.user._id === auth.auth.user?._id
+    (like) => like.user === auth.auth.user?._id
   )
 
   const [hasLike, setHasLike] = useState(initialHasLike)
@@ -36,18 +38,29 @@ const PostItem: FC<Props> = ({ post }) => {
 
   const onDeletePostClicked = async () => {
     if (window.confirm('投稿を削除してもよろしいですか？')) {
-      await dispatch(deletePost(post._id))
+      const resultAction = await dispatch(deletePost(post._id))
+      if (deletePost.fulfilled.match(resultAction)) {
+        const payload = resultAction.payload as any
+        const id = uuidv4()
+        await dispatch(
+          setAlert({
+            id,
+            msg: payload.msg,
+            alertType: 'success',
+          })
+        )
+        setTimeout(() => dispatch(removeAlert({ id })), 5000)
+      }
     }
-    // @to-do payload.msgをsetAlertで表示
   }
 
   return (
     <div className="post bg-white p-1 my-1">
       <div>
-        <a href="profile.html">
-          <img className="round-img" src={post.avatar} alt="" />
+        <Link to={`/profile/${post.user}`}>
+          <img className="round-img" src={post.avatar} />
           <h4>{post.name}</h4>
-        </a>
+        </Link>
       </div>
       <div>
         <h4>{post.title}</h4>

@@ -46,7 +46,6 @@ export const fetchAllProfile = createAsyncThunk(
       return res.data
     } catch (err) {
       const errors = err.response.data
-      console.error(errors)
       return rejectWithValue({ errors })
     }
   }
@@ -75,6 +74,7 @@ export const createProfile = createAsyncThunk(
       return res.data
     } catch (err) {
       const errors = err.response.data.errors
+      console.error(errors)
       return rejectWithValue({ errors })
     }
   }

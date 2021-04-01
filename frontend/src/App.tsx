@@ -10,6 +10,7 @@ import EditProfile from './components/profile-form/EditProfile'
 import Profiles from './components/profiles/Profiles'
 import Profile from './components/profile/Profile'
 import Posts from './components/posts/Posts'
+import PostForm from './components/posts/PostForm'
 import PrivateRoute from './components/routing/PrivateRoute'
 import setAuhtToken from './utils/setAuthToken'
 import { loadUser } from './features/authSlice'
@@ -47,6 +48,7 @@ const App = () => {
             />
             <PrivateRoute exact path="/edit-profile" component={EditProfile} />
             <PrivateRoute exact path="/posts" component={Posts} />
+            <PrivateRoute exact path="/post-form" component={PostForm} />
           </Switch>
         </section>
       </Fragment>

@@ -4,6 +4,8 @@ import PostItem from './PostItem'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchPosts } from '../../features/postSlice'
 import { RootState } from '../../app/store'
+import { Link } from 'react-router-dom'
+import Alert from '../layout/Alert'
 
 const Posts = () => {
   const dispatch = useAppDispatch()
@@ -20,11 +22,15 @@ const Posts = () => {
         <Spinner />
       ) : (
         <Fragment>
-          <h1 className="large text-primary">Posts</h1>
+          <Alert />
+          <h1 className="large text-primary">記事一覧</h1>
           <p className="lead">
             <i className="fas fa-user"></i> ようこそ
           </p>
           {/* PostForm */}
+          <Link to="/post-form" className="btn btn-primary">
+            投稿する
+          </Link>
           <div className="posts">
             {posts.map((post) => (
               <PostItem key={post._id} post={post} />
