@@ -22,7 +22,7 @@ module.exports = {
       return res.status(400).json({ errors: errors.array() })
     }
 
-    const { name, email, password } = req.body
+    const { name, email, url, password } = req.body
 
     try {
       // ユーザーが存在するか確認
@@ -34,11 +34,13 @@ module.exports = {
       }
 
       // Gravatarの取得
-      const avatar = gravatar.url(email, {
-        s: '200',
-        r: 'pg',
-        d: 'mm',
-      })
+      const avatar = url
+        ? url
+        : gravatar.url(email, {
+            s: '200',
+            r: 'pg',
+            d: 'mm',
+          })
 
       user = new User({
         name,

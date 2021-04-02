@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, FC, useState } from 'react'
+import React, { Fragment, useEffect, FC, useState, useMemo } from 'react'
 import Spinner from '../layout/Spinner'
 import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
@@ -8,6 +8,7 @@ import {
   PostData,
   removeLike,
   addLike,
+  fetchPosts,
 } from '../../features/postSlice'
 import Moment from 'react-moment'
 import CommentForm from './CommentForm'
@@ -20,35 +21,29 @@ const Post: FC<PageProps> = ({ match }) => {
   const { id } = match.params
   const dispatch = useAppDispatch()
   const singlePost = useAppSelector((state: RootState) => state.post.post)
+
   const loading = useAppSelector((state: RootState) => state.post.loading)
 
   const auth = useAppSelector((state: RootState) => state.auth.auth)
 
-  // likes配列にauthのuserが含まれるか確認
-  // likes user => likesのuid
-  // auth.user._id => authのuid
-
-  const initialHasLike = singlePost
-    ? singlePost.likes.some((like) => like.user === auth.user?._id)
-    : false
-
-  const [hasLike, setHasLike] = useState(initialHasLike)
-
-  console.log(hasLike)
+  const [hasLike, setHasLike] = useState(false)
 
   useEffect(() => {
     dispatch(fetchSinglePost(id))
+    dispatch(fetchPosts())
   }, [])
 
+  useEffect(() => {
+    if (singlePost === null) return
+    setHasLike(singlePost.likes.some((like) => like.user === auth.user?._id))
+  }, [singlePost, auth.user?._id])
+
   const clickLikeButton = () => {
-    // if (singlePost === null) return
     if (hasLike) {
       dispatch(removeLike(id))
-      console.log('remove', hasLike)
       setHasLike(false)
     } else {
       dispatch(addLike(id))
-      console.log('add', hasLike)
       setHasLike(true)
     }
   }

@@ -7,9 +7,11 @@ import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { registerUser } from '../../features/authSlice'
 import { unwrapResult } from '@reduxjs/toolkit'
+import { storage } from '../../firebase'
 export interface RegisterUserData {
   name: string
   email: string
+  url?: string
   password: string
 }
 
@@ -23,6 +25,8 @@ const Register = () => {
     password2: '',
   })
 
+  const [image, setImage] = useState<File | null>(null)
+
   const { name, email, password, password2 } = formData
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +35,7 @@ const Register = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    let url = ''
     if (password !== password2) {
       const id = uuidv4()
       dispatch(
@@ -41,6 +46,22 @@ const Register = () => {
         })
       )
       setTimeout(() => dispatch(removeAlert({ id })), 5000)
+    } else if (image) {
+      const str =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      const num = 16
+      const randomChar = Array.from(
+        crypto.getRandomValues(new Uint32Array(num))
+      )
+        .map((n) => str[n % str.length])
+        .join('')
+      const fileName = randomChar + '_' + image.name
+      await storage.ref(`avatars/${fileName}`).put(image)
+      url = await storage.ref('avatars').child(fileName).getDownloadURL()
+
+      const userData: RegisterUserData = { name, email, url, password }
+      const resultAction = await dispatch(registerUser(userData))
+      unwrapResult(resultAction)
     } else {
       const userData: RegisterUserData = { name, email, password }
       const resultAction = await dispatch(registerUser(userData))
@@ -57,6 +78,13 @@ const Register = () => {
           setTimeout(() => dispatch(removeAlert({ id })), 5000)
         })
       }
+    }
+  }
+
+  const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0]) {
+      setImage(e.target.files![0])
+      e.target.value = ''
     }
   }
 
@@ -96,6 +124,11 @@ const Register = () => {
           <small className="form-text">
             Gravatarを使用している場合は、Gravatarのメールアドレスを入力してください
           </small>
+        </div>
+        <div className="form-group">
+          <i className="far fa-images fa-3x">
+            <input type="file" onChange={onChangeImageHandler} />
+          </i>
         </div>
         <div className="form-group">
           <input

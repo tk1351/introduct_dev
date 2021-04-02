@@ -95,6 +95,11 @@ const PostForm = ({ history }: Props) => {
           />
         </div>
         <div className="form-group">
+          <i className="far fa-images fa-3x">
+            <input type="file" onChange={() => console.log('ok')} />
+          </i>
+        </div>
+        <div className="form-group">
           <input
             type="text"
             placeholder="URL"

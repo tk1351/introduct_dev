@@ -219,6 +219,9 @@ export const postSlice = createSlice({
         (post: { _id: string }) => post._id === payload.id
       )
       state.posts[targetPostIndex].likes = payload.likes
+      if (state.post !== null) {
+        state.post.likes = payload.likes
+      }
       state.loading = false
       state.error = null
     },
@@ -250,6 +253,9 @@ export const postSlice = createSlice({
       const targetPostIndex = state.posts.findIndex(
         (post: { _id: string }) => post._id === payload.id
       )
+      if (state.post !== null) {
+        state.post.likes = payload.likes
+      }
       state.posts[targetPostIndex].likes = payload.likes
       state.loading = false
       state.error = null
