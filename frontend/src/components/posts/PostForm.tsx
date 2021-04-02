@@ -20,8 +20,8 @@ const PostForm = ({ history }: Props) => {
     user: '',
     name: '',
     avatar: '',
-    likes: [{ user: '' }],
-    comments: [{ user: '', text: '', date: new Date() }],
+    likes: [],
+    comments: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   })

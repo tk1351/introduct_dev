@@ -2,6 +2,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { UserData } from './authSlice'
 
+export type CommentData = {
+  _id: string
+  user: string
+  name: string
+  avatar: string
+  text: string
+  date: Date
+}
+
 export interface PostData {
   _id: string
   title: string
@@ -11,8 +20,8 @@ export interface PostData {
   user: string
   name: string
   avatar: string
-  likes: [{ user: string }]
-  comments: [{ user: string; text: string; date: Date }]
+  likes: { user: string }[]
+  comments: CommentData[]
   createdAt: Date
   updatedAt: Date
 }
@@ -66,6 +75,7 @@ export const addPost = createAsyncThunk(
   '/post/addPost',
   async (postData: PostData, { rejectWithValue }) => {
     try {
+      console.log(postData)
       const url = '/api/v1/posts'
       const res = await axios.post(url, postData)
       return res.data
@@ -90,6 +100,21 @@ export const addLike = createAsyncThunk(
   }
 )
 
+export const addComment = createAsyncThunk(
+  'post/addComment',
+  async (commentData: any, { rejectWithValue }) => {
+    try {
+      const post_id = commentData.post_id
+      const url = `/api/v1/posts/comment/${post_id}`
+      const res = await axios.post(url, commentData)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const removeLike = createAsyncThunk(
   'post/removeLike',
   async (post_id: string, { rejectWithValue }) => {
@@ -99,6 +124,23 @@ export const removeLike = createAsyncThunk(
       return { id: post_id, likes: res.data }
     } catch (err) {
       const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
+export const removeComment = createAsyncThunk(
+  'post/removeComment',
+  async (commentData: any, { rejectWithValue }) => {
+    try {
+      const post_id = commentData.post_id
+      const comment_id = commentData.comment_id
+
+      const url = `/api/v1/posts/comment/${post_id}/${comment_id}`
+      const res = await axios.delete(url)
+      return { id: comment_id, ...res.data }
+    } catch (err) {
+      const errors = err.response.data.errors
       return rejectWithValue({ errors })
     }
   }
@@ -185,6 +227,21 @@ export const postSlice = createSlice({
       state.loading = false
       state.error = payload.errors
     },
+    [addComment.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [addComment.fulfilled as any]: (state, { payload }) => {
+      if (state.post === null) return
+      state.status = 'succeeded'
+      state.post.comments = payload
+      state.loading = false
+      state.error = null
+    },
+    [addComment.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
     [removeLike.pending as any]: (state) => {
       state.status = 'loading'
     },
@@ -198,6 +255,24 @@ export const postSlice = createSlice({
       state.error = null
     },
     [removeLike.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.loading = false
+      state.error = payload.errors
+    },
+    [removeComment.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [removeComment.fulfilled as any]: (state, { payload }) => {
+      if (state.post === null) return
+      state.status = 'succeeded'
+      const deleteCommentIndex = state.post.comments.findIndex(
+        (comment: { _id: string }) => comment._id === payload.id
+      )
+      state.post.comments.splice(deleteCommentIndex, 1)
+      state.loading = false
+      state.error = null
+    },
+    [removeComment.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.loading = false
       state.error = payload.errors

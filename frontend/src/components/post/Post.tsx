@@ -10,11 +10,11 @@ import {
   addLike,
 } from '../../features/postSlice'
 import Moment from 'react-moment'
+import CommentForm from './CommentForm'
+import CommentItem from './CommentItem'
+import Alert from '../layout/Alert'
 
 type PageProps = {} & RouteComponentProps<{ id: string }>
-type Post = {
-  post: PostData
-}
 
 const Post: FC<PageProps> = ({ match }) => {
   const { id } = match.params
@@ -24,25 +24,34 @@ const Post: FC<PageProps> = ({ match }) => {
 
   const auth = useAppSelector((state: RootState) => state.auth.auth)
 
-  // const initialHasLike = singlePost?.likes.some(
-  //   (like) => like.user === auth.user?._id
-  // )
+  // likes配列にauthのuserが含まれるか確認
+  // likes user => likesのuid
+  // auth.user._id => authのuid
 
-  // const [hasLike, setHasLike] = useState(initialHasLike)
+  const initialHasLike = singlePost
+    ? singlePost.likes.some((like) => like.user === auth.user?._id)
+    : false
+
+  const [hasLike, setHasLike] = useState(initialHasLike)
+
+  console.log(hasLike)
 
   useEffect(() => {
     dispatch(fetchSinglePost(id))
   }, [])
 
-  // const clickLikeButton = () => {
-  //   if (hasLike) {
-  //     dispatch(removeLike(singlePost._id))
-  //     setHasLike(false)
-  //   } else {
-  //     dispatch(addLike(singlePost._id))
-  //     setHasLike(true)
-  //   }
-  // }
+  const clickLikeButton = () => {
+    // if (singlePost === null) return
+    if (hasLike) {
+      dispatch(removeLike(id))
+      console.log('remove', hasLike)
+      setHasLike(false)
+    } else {
+      dispatch(addLike(id))
+      console.log('add', hasLike)
+      setHasLike(true)
+    }
+  }
 
   return (
     <Fragment>
@@ -50,6 +59,10 @@ const Post: FC<PageProps> = ({ match }) => {
         <Spinner />
       ) : (
         <Fragment>
+          <Alert />
+          <Link className="btn btn-light my-1" to="/posts">
+            戻る
+          </Link>
           <div className="post bg-white p-1 my-1">
             <div>
               <Link to={`/profile/${singlePost.user}`}>
@@ -78,7 +91,11 @@ const Post: FC<PageProps> = ({ match }) => {
                 Posted on{' '}
                 <Moment format="YYYY/MM/DD">{singlePost.createdAt}</Moment>
               </p>
-              <button type="button" className="btn btn-light">
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={clickLikeButton}
+              >
                 <i className="fas fa-thumbs-up"></i>{' '}
                 {singlePost.likes.length > 0 && (
                   <span>{singlePost.likes.length}</span>
@@ -86,10 +103,16 @@ const Post: FC<PageProps> = ({ match }) => {
               </button>
             </div>
           </div>
-
-          <Link className="btn btn-light my-1" to="/posts">
-            戻る
-          </Link>
+          <CommentForm />
+          <div className="comments">
+            {singlePost.comments.map((comment) => (
+              <CommentItem
+                key={comment._id}
+                comment={comment}
+                post_id={singlePost._id}
+              />
+            ))}
+          </div>
         </Fragment>
       )}
     </Fragment>
