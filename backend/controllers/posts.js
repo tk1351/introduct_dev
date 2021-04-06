@@ -29,6 +29,22 @@ module.exports = {
       res.status(500).send('Server Error')
     }
   },
+  getPostsByUserId: async (req, res) => {
+    try {
+      const user_id = req.params.user_id
+      const posts = await Post.find({ user: user_id })
+      if (!posts) {
+        return res.status(404).json({ msg: '投稿がありません' })
+      }
+      res.json(posts)
+    } catch (err) {
+      console.error(err.message)
+      if (err.kind === 'ObjectId') {
+        return res.status(400).json({ msg: '投稿がありません' })
+      }
+      res.status(500).send('Server Error')
+    }
+  },
   createPost: async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {

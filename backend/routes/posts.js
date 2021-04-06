@@ -6,6 +6,7 @@ const { check } = require('express-validator')
 
 router.get('/', auth, postsController.getAllPosts)
 router.get('/:post_id', auth, postsController.getPostById)
+router.get('/profile/:user_id', auth, postsController.getPostsByUserId)
 router.post(
   '/',
   [
