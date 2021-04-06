@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import { UserData } from './authSlice'
 
-export type CommentData = {
+export interface CommentData {
   _id: string
   user: string
   name: string
@@ -75,7 +74,6 @@ export const addPost = createAsyncThunk(
   '/post/addPost',
   async (postData: PostData, { rejectWithValue }) => {
     try {
-      console.log(postData)
       const url = '/api/v1/posts'
       const res = await axios.post(url, postData)
       return res.data
