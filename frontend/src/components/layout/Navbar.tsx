@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { logout } from '../../features/authSlice'
@@ -13,9 +13,12 @@ const Navbar = () => {
   )
   const loading = useAppSelector((state: RootState) => state.auth.auth.loading)
 
-  const clearUsersState = () => {
-    dispatch(clearProfile())
-    dispatch(logout())
+  const history = useHistory()
+
+  const clearUsersState = async () => {
+    await dispatch(clearProfile())
+    await dispatch(logout())
+    history.push('/login')
   }
 
   const authLinks = (
