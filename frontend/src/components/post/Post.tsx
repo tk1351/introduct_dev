@@ -1,11 +1,10 @@
-import React, { Fragment, useEffect, FC, useState, useMemo } from 'react'
+import React, { Fragment, useEffect, FC, useState } from 'react'
 import Spinner from '../layout/Spinner'
 import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import {
   fetchSinglePost,
-  PostData,
   removeLike,
   addLike,
   fetchPosts,
@@ -68,7 +67,11 @@ const Post: FC<PageProps> = ({ match }) => {
             <div>
               <h4>{singlePost.title}</h4>
               <p className="my-1">{singlePost.text}</p>
-              {/* image表示 */}
+              {singlePost.imageUrl === '' ? (
+                <></>
+              ) : (
+                <img src={singlePost.imageUrl} />
+              )}
               {singlePost.url === '' ? (
                 <></>
               ) : (

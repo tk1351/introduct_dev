@@ -14,7 +14,7 @@ export interface PostData {
   _id: string
   title: string
   text: string
-  image: string
+  imageUrl: string
   url: string
   user: string
   name: string

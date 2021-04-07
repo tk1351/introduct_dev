@@ -6,6 +6,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
+import { storage } from '../../firebase'
 
 interface Props extends RouteComponentProps {}
 
@@ -15,8 +16,8 @@ const PostForm = ({ history }: Props) => {
     _id: '',
     title: '',
     text: '',
-    image: '',
     url: '',
+    imageUrl: '',
     user: '',
     name: '',
     avatar: '',
@@ -26,7 +27,9 @@ const PostForm = ({ history }: Props) => {
     updatedAt: new Date(),
   })
 
-  const { title, text, image, url } = formData
+  const [image, setImage] = useState<File | null>(null)
+
+  const { title, text, url } = formData
 
   const onChange = (e: { target: { name: string; value: string } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -34,28 +37,78 @@ const PostForm = ({ history }: Props) => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const postData: PostData = formData
-    const resultAction = await dispatch(addPost(postData))
+    let imageUrl = ''
 
-    if (addPost.fulfilled.match(resultAction)) {
-      unwrapResult(resultAction)
-      history.push('/posts')
-      const id = uuidv4()
-      dispatch(
-        setAlert({
-          id,
-          msg: '記事を投稿しました',
-          alertType: 'success',
-        })
+    if (image) {
+      // 画像がある場合の投稿処理
+      const str =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      const num = 16
+      const randomChar = Array.from(
+        crypto.getRandomValues(new Uint32Array(num))
       )
-      setTimeout(() => dispatch(removeAlert({ id })), 5000)
-    } else if (addPost.rejected.match(resultAction)) {
-      const payload = resultAction.payload as any
-      payload.errors.map((error: ErrorAlert) => {
+        .map((n) => str[n % str.length])
+        .join('')
+      const fileName = randomChar + '_' + image.name
+      await storage.ref(`avatars/${fileName}`).put(image)
+      imageUrl = await storage.ref('avatars').child(fileName).getDownloadURL()
+      const postData: PostData = { ...formData, imageUrl }
+      const resultAction = await dispatch(addPost(postData))
+
+      console.log('postData', postData)
+
+      if (addPost.fulfilled.match(resultAction)) {
+        unwrapResult(resultAction)
+        history.push('/posts')
         const id = uuidv4()
-        dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+        dispatch(
+          setAlert({
+            id,
+            msg: '記事を投稿しました',
+            alertType: 'success',
+          })
+        )
         setTimeout(() => dispatch(removeAlert({ id })), 5000)
-      })
+      } else if (addPost.rejected.match(resultAction)) {
+        const payload = resultAction.payload as any
+        payload.errors.map((error: ErrorAlert) => {
+          const id = uuidv4()
+          dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+          setTimeout(() => dispatch(removeAlert({ id })), 5000)
+        })
+      }
+    } else {
+      // 画像がない場合の投稿処理
+      const postData: PostData = formData
+      const resultAction = await dispatch(addPost(postData))
+
+      if (addPost.fulfilled.match(resultAction)) {
+        unwrapResult(resultAction)
+        history.push('/posts')
+        const id = uuidv4()
+        dispatch(
+          setAlert({
+            id,
+            msg: '記事を投稿しました',
+            alertType: 'success',
+          })
+        )
+        setTimeout(() => dispatch(removeAlert({ id })), 5000)
+      } else if (addPost.rejected.match(resultAction)) {
+        const payload = resultAction.payload as any
+        payload.errors.map((error: ErrorAlert) => {
+          const id = uuidv4()
+          dispatch(setAlert({ id, msg: error.msg, alertType: 'danger' }))
+          setTimeout(() => dispatch(removeAlert({ id })), 5000)
+        })
+      }
+    }
+  }
+
+  const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0]) {
+      setImage(e.target.files![0])
+      e.target.value = ''
     }
   }
 
@@ -85,7 +138,7 @@ const PostForm = ({ history }: Props) => {
             cols={30}
           ></textarea>
         </div>
-        <div className="form-group">
+        {/* <div className="form-group">
           <input
             type="text"
             placeholder="画像"
@@ -93,10 +146,10 @@ const PostForm = ({ history }: Props) => {
             value={image}
             onChange={(e) => onChange(e)}
           />
-        </div>
+        </div> */}
         <div className="form-group">
           <i className="far fa-images fa-3x">
-            <input type="file" onChange={() => console.log('ok')} />
+            <input type="file" onChange={onChangeImageHandler} />
           </i>
         </div>
         <div className="form-group">

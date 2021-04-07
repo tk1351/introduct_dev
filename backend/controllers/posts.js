@@ -56,7 +56,7 @@ module.exports = {
       const newPost = new Post({
         title: req.body.title,
         text: req.body.text,
-        image: req.body.image,
+        imageUrl: req.body.imageUrl,
         url: req.body.url,
         user: req.user.id,
         name: user.name,

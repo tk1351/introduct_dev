@@ -23,7 +23,7 @@ const PostSchema = new Schema(
       max: [1000],
       required: true,
     },
-    image: {
+    imageUrl: {
       type: String,
     },
     url: {
