@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import { fetchAllProfile } from '../../features/profileSlice'
 import ProfileItem from './ProfileItem'
+import { removePostState } from '../../features/postSlice'
 
 const Profiles = () => {
   const dispatch = useAppDispatch()
@@ -11,6 +12,7 @@ const Profiles = () => {
   const loading = useAppSelector((state: RootState) => state.profile.loading)
   useEffect(() => {
     dispatch(fetchAllProfile())
+    dispatch(removePostState())
   }, [])
   return (
     <Fragment>

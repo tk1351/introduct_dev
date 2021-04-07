@@ -32,7 +32,7 @@ module.exports = {
   getPostsByUserId: async (req, res) => {
     try {
       const user_id = req.params.user_id
-      const posts = await Post.find({ user: user_id })
+      const posts = await Post.find({ user: user_id }).sort({ createdAt: -1 })
       if (!posts) {
         return res.status(404).json({ msg: '投稿がありません' })
       }

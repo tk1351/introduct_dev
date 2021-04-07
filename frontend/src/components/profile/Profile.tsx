@@ -7,6 +7,7 @@ import { RootState } from '../../app/store'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchProfileByUid } from '../../features/profileSlice'
 import { RouteComponentProps } from 'react-router-dom'
+import PostsPerProfile from '../posts/PostsPerProfile'
 
 type PageProps = {} & RouteComponentProps<{ id: string }>
 
@@ -39,6 +40,7 @@ const Profile: FC<PageProps> = ({ match }) => {
           <div className="profile-grid my-1">
             <ProfileTop profile={profile} />
             <ProfileAbout profile={profile} />
+            <PostsPerProfile profile={profile} />
           </div>
         </Fragment>
       )}

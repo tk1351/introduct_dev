@@ -70,6 +70,20 @@ export const fetchSinglePost = createAsyncThunk(
   }
 )
 
+export const fetchPostsByUserId = createAsyncThunk(
+  'post/fetchPostsByUserId',
+  async (user_id: string, { rejectWithValue }) => {
+    try {
+      const url = `/api/v1/posts/profile/${user_id}`
+      const res = await axios.get(url)
+      return res.data
+    } catch (err) {
+      const errors = err.response.data
+      return rejectWithValue({ errors })
+    }
+  }
+)
+
 export const addPost = createAsyncThunk(
   '/post/addPost',
   async (postData: PostData, { rejectWithValue }) => {
@@ -161,7 +175,12 @@ export const deletePost = createAsyncThunk(
 export const postSlice = createSlice({
   name: 'post',
   initialState,
-  reducers: {},
+  reducers: {
+    removePostState(state) {
+      state.post = null
+      state.posts = []
+    },
+  },
   extraReducers: {
     [fetchPosts.pending as any]: (state) => {
       state.status = 'loading'
@@ -190,6 +209,21 @@ export const postSlice = createSlice({
     [fetchSinglePost.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.post = null
+      state.loading = false
+      state.error = payload.errors
+    },
+    [fetchPostsByUserId.pending as any]: (state) => {
+      state.status = 'loading'
+    },
+    [fetchPostsByUserId.fulfilled as any]: (state, { payload }) => {
+      state.status = 'succeeded'
+      state.posts = payload
+      state.loading = false
+      state.error = null
+    },
+    [fetchPostsByUserId.rejected as any]: (state, { payload }) => {
+      state.status = 'failed'
+      state.posts = []
       state.loading = false
       state.error = payload.errors
     },
@@ -300,5 +334,7 @@ export const postSlice = createSlice({
     },
   },
 })
+
+export const { removePostState } = postSlice.actions
 
 export default postSlice.reducer
