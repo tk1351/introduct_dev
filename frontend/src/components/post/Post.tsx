@@ -67,24 +67,28 @@ const Post: FC<PageProps> = ({ match }) => {
             <div>
               <h4>{singlePost.title}</h4>
               <p className="my-1">{singlePost.text}</p>
-              {singlePost.imageUrl === '' ? (
-                <></>
-              ) : (
-                <img src={singlePost.imageUrl} />
-              )}
-              {singlePost.url === '' ? (
-                <></>
-              ) : (
-                <a
-                  href={singlePost.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="fas fa-globe fa-2x"></i>
-                  {'  '}
-                  <span>{singlePost.url}</span>
-                </a>
-              )}
+              <div>
+                {singlePost.imageUrl === '' ? (
+                  <></>
+                ) : (
+                  <img src={singlePost.imageUrl} />
+                )}
+              </div>
+              <div>
+                {singlePost.url === '' ? (
+                  <></>
+                ) : (
+                  <a
+                    href={singlePost.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i className="fas fa-globe fa-2x"></i>
+                    {'  '}
+                    <span>{singlePost.url}</span>
+                  </a>
+                )}
+              </div>
               <p className="post-date">
                 Posted on{' '}
                 <Moment format="YYYY/MM/DD">{singlePost.createdAt}</Moment>

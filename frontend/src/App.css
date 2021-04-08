@@ -258,6 +258,10 @@ img {
   border: 1px solid #ccc;
 }
 
+.form input[type='file'] {
+  display: none;
+}
+
 .form input[type='submit'],
 button {
   font: inherit;

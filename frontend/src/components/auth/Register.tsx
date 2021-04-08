@@ -126,9 +126,17 @@ const Register = () => {
           </small>
         </div>
         <div className="form-group">
-          <i className="far fa-images fa-3x">
-            <input type="file" onChange={onChangeImageHandler} />
-          </i>
+          <i className="far fa-images fa-3x"></i>
+          <label className="btn btn-primary">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onChangeImageHandler}
+            />
+            ファイル選択
+          </label>
+          {image !== null && <p>{image.name}</p>}
+          <small className="form-text">対応ファイル: jpeg, jpg, png</small>
         </div>
         <div className="form-group">
           <input

@@ -55,8 +55,6 @@ const PostForm = ({ history }: Props) => {
       const postData: PostData = { ...formData, imageUrl }
       const resultAction = await dispatch(addPost(postData))
 
-      console.log('postData', postData)
-
       if (addPost.fulfilled.match(resultAction)) {
         unwrapResult(resultAction)
         history.push('/posts')
@@ -138,19 +136,18 @@ const PostForm = ({ history }: Props) => {
             cols={30}
           ></textarea>
         </div>
-        {/* <div className="form-group">
-          <input
-            type="text"
-            placeholder="画像"
-            name="image"
-            value={image}
-            onChange={(e) => onChange(e)}
-          />
-        </div> */}
         <div className="form-group">
-          <i className="far fa-images fa-3x">
-            <input type="file" onChange={onChangeImageHandler} />
-          </i>
+          <i className="far fa-images fa-3x"></i>
+          <label className="btn btn-primary">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onChangeImageHandler}
+            />
+            ファイル選択
+          </label>
+          {image !== null && <p>{image.name}</p>}
+          <small className="form-text">対応ファイル: jpeg, jpg, png</small>
         </div>
         <div className="form-group">
           <input
