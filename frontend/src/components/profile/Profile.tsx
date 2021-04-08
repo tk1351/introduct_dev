@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, FC } from 'react'
 import Spinner from '../layout/Spinner'
 import ProfileTop from './ProfileTop'
 import ProfileAbout from './ProfileAbout'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { RootState } from '../../app/store'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchProfileByUid } from '../../features/profileSlice'
@@ -21,15 +21,21 @@ const Profile: FC<PageProps> = ({ match }) => {
   useEffect(() => {
     dispatch(fetchProfileByUid(id))
   }, [])
+
+  const history = useHistory()
+  const handleLink = () => {
+    history.goBack()
+  }
+
   return (
     <Fragment>
       {profile === null || loading ? (
         <Spinner />
       ) : (
         <Fragment>
-          <Link to="/profiles" className="btn btn-light">
+          <button onClick={handleLink} className="btn btn-light">
             戻る
-          </Link>
+          </button>
           {auth.auth.isAuthenticated &&
             auth.auth.loading === false &&
             auth.auth.user?._id === profile.user._id && (

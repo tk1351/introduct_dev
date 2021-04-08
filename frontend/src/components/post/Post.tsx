@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, FC, useState } from 'react'
 import Spinner from '../layout/Spinner'
 import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import { RootState } from '../../app/store'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps, Link, useHistory } from 'react-router-dom'
 import {
   fetchSinglePost,
   removeLike,
@@ -47,6 +47,11 @@ const Post: FC<PageProps> = ({ match }) => {
     }
   }
 
+  const history = useHistory()
+  const handleLink = () => {
+    history.goBack()
+  }
+
   return (
     <Fragment>
       {loading || singlePost === null ? (
@@ -54,9 +59,9 @@ const Post: FC<PageProps> = ({ match }) => {
       ) : (
         <Fragment>
           <Alert />
-          <Link className="btn btn-light my-1" to="/posts">
+          <button className="btn btn-light my-1" onClick={handleLink}>
             戻る
-          </Link>
+          </button>
           <div className="post bg-white p-1 my-1">
             <div>
               <Link to={`/profile/${singlePost.user}`}>

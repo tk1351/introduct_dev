@@ -5,7 +5,7 @@ import { setAlert, removeAlert } from '../../features/alertSlice'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps, Link, useHistory } from 'react-router-dom'
 import { UserData } from '../../features/authSlice'
 
 export interface ProfileData {
@@ -24,10 +24,10 @@ export interface ProfileData {
   user: UserData
 }
 
-interface Props extends RouteComponentProps {}
-
-const CreateProfile = ({ history }: Props) => {
+const CreateProfile = () => {
   const dispatch = useAppDispatch()
+
+  const history = useHistory()
 
   const [formData, setFormData] = useState<ProfileData>({
     _id: '',
@@ -92,9 +92,17 @@ const CreateProfile = ({ history }: Props) => {
       })
     }
   }
+
+  const handleLink = () => {
+    history.goBack()
+  }
+
   return (
     <Fragment>
       <Alert />
+      <button className="btn btn-light my-1" onClick={handleLink}>
+        戻る
+      </button>
       <h1 className="large text-primary">プロフィール設定</h1>
       <p className="lead">
         <i className="fas fa-user"></i> 詳細を設定してください
@@ -110,7 +118,7 @@ const CreateProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            Could be your own company or one you work for
+            所属している会社を記入してください
           </small>
         </div>
         <div className="form-group">
@@ -122,7 +130,7 @@ const CreateProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            Could be your own or a company website
+            所属している会社のWebサイトのURLを記入してください
           </small>
         </div>
         <div className="form-group">
@@ -134,7 +142,7 @@ const CreateProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            City & state suggested (eg. Boston, MA)
+            拠点を記入してください（例: 東京）
           </small>
         </div>
         <div className="form-group">
@@ -144,7 +152,7 @@ const CreateProfile = ({ history }: Props) => {
             value={bio}
             onChange={(e) => onChange(e)}
           ></textarea>
-          <small className="form-text">Tell us a little about yourself</small>
+          <small className="form-text">自己紹介を記入してください</small>
         </div>
 
         <div className="my-2">
@@ -218,9 +226,6 @@ const CreateProfile = ({ history }: Props) => {
         )}
 
         <input type="submit" className="btn btn-primary my-1" />
-        <Link className="btn btn-light my-1" to="/dashboard">
-          戻る
-        </Link>
       </form>
     </Fragment>
   )

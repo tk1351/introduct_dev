@@ -7,17 +7,19 @@ import { ProfileData } from './CreateProfile'
 import { v4 as uuidv4 } from 'uuid'
 import Alert, { ErrorAlert } from '../layout/Alert'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps, useHistory } from 'react-router-dom'
 
 interface Props extends RouteComponentProps {}
 
-const EditProfile = ({ history }: Props) => {
+const EditProfile = () => {
   const dispatch = useAppDispatch()
   // FIXME: profileのany
   const profile: any = useAppSelector(
     (state: RootState) => state.profile.profile
   )
   const loading = useAppSelector((state: RootState) => state.profile.loading)
+
+  const history = useHistory()
 
   const [formData, setFormData] = useState<ProfileData>({
     _id: '',
@@ -53,13 +55,6 @@ const EditProfile = ({ history }: Props) => {
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
       bio: loading || !profile.bio ? '' : profile.bio,
-      // social: {
-      //   twitter: loading || !profile.social ? '' : profile.social.twitter,
-      //   facebook: loading || !profile.social ? '' : profile.social.facebook,
-      //   linkedin: loading || !profile.social ? '' : profile.social.linkedin,
-      //   youtube: loading || !profile.social ? '' : profile.social.youtube,
-      //   instagram: loading || !profile.social ? '' : profile.social.instagram,
-      // },
       social: loading || !profile.social ? {} : profile.social,
       user: loading || !profile.user ? {} : profile.user,
     })
@@ -105,9 +100,17 @@ const EditProfile = ({ history }: Props) => {
       })
     }
   }
+
+  const handleLink = () => {
+    history.goBack()
+  }
+
   return (
     <Fragment>
       <Alert />
+      <button className="btn btn-light my-1" onClick={handleLink}>
+        戻る
+      </button>
       <h1 className="large text-primary">プロフィールの編集</h1>
       <p className="lead">
         <i className="fas fa-user"></i> 詳細を設定してください
@@ -123,7 +126,7 @@ const EditProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            Could be your own company or one you work for
+            所属している会社を記入してください
           </small>
         </div>
         <div className="form-group">
@@ -135,7 +138,7 @@ const EditProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            Could be your own or a company website
+            所属している会社のWebサイトのURLを記入してください
           </small>
         </div>
         <div className="form-group">
@@ -147,7 +150,7 @@ const EditProfile = ({ history }: Props) => {
             onChange={(e) => onChange(e)}
           />
           <small className="form-text">
-            City & state suggested (eg. Boston, MA)
+            拠点を記入してください（例: 東京）
           </small>
         </div>
         <div className="form-group">
@@ -157,7 +160,7 @@ const EditProfile = ({ history }: Props) => {
             value={bio}
             onChange={(e) => onChange(e)}
           ></textarea>
-          <small className="form-text">Tell us a little about yourself</small>
+          <small className="form-text">自己紹介を記入してください</small>
         </div>
 
         <div className="my-2">
@@ -231,9 +234,6 @@ const EditProfile = ({ history }: Props) => {
         )}
 
         <input type="submit" className="btn btn-primary my-1" />
-        <Link className="btn btn-light my-1" to="/dashboard">
-          戻る
-        </Link>
       </form>
     </Fragment>
   )
