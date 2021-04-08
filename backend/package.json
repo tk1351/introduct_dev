@@ -14,9 +14,22 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.2.3",
+    "jest": "^26.6.3",
+    "mongodb-memory-server": "^6.9.6",
     "node-dev": "^6.4.0"
   },
   "scripts": {
-    "dev": "node-dev index.js"
+    "dev": "node-dev index.js",
+    "test": "jest --maxWorkers 4 --detectOpenHandles"
+  },
+  "jest": {
+    "preset": "@shelf/jest-mongodb"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "debug": "1",
+      "version": "4.2.3"
+    }
   }
 }
