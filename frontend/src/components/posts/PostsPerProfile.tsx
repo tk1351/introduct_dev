@@ -18,6 +18,7 @@ const PostsPerProfile: FC<Props> = ({ profile }) => {
     dispatch(fetchPostsByUserId(profile.user._id))
   }, [profile])
   return (
+    // 中央揃えする
     <div>
       {usersPosts.length > 0 ? (
         <Fragment>
