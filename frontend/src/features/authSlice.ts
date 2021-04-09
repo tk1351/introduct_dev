@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { RegisterUserData } from '../components/auth/Register'
 import setAuthToken from '../utils/setAuthToken'
@@ -12,7 +12,7 @@ export interface UserData {
   createdAt: Date
   updatedAt: Date
 }
-interface AuthState {
+export interface AuthState {
   auth: {
     token: string | null
     isAuthenticated: boolean
@@ -98,6 +98,7 @@ export const authSlice = createSlice({
       state.auth.isAuthenticated = false
       state.auth.loading = false
       state.auth.user = null
+      state.status = 'idle'
       localStorage.removeItem('token')
     },
   },
@@ -151,6 +152,8 @@ export const authSlice = createSlice({
     [loginUser.rejected as any]: (state, { payload }) => {
       state.status = 'failed'
       state.error = payload.errors
+      state.auth.isAuthenticated = false
+      state.auth.loading = false
     },
   },
 })

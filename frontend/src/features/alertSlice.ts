@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
-interface AlertState {
+export interface AlertState {
   alert: {
     id: string
     msg: string
